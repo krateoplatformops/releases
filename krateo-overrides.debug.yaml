@@ -30,7 +30,7 @@ components:
   # - enabled:      toggle the whole component on/off
   # - helmDefaults: defaults applied to ALL chart steps of this component
   # - stepConfig:   per-step overrides keyed by step id (only for chart steps)
-  authn:
+  backend:
     stepConfig:
       install-authn:
         releaseName: authn2
@@ -49,7 +49,7 @@ components:
   # Example: Customize eventsse component
   # - helmDefaults: applied to all eventsse chart steps (install-eventsse-etcd, install-eventsse, install-sweeper)
   # - stepConfig:   refine settings for a specific chart step only
-  eventsse:
+  eventstack:
     stepConfig:
       install-eventsse:
         helmValues:
@@ -61,7 +61,7 @@ components:
     enabled: false
 
   # Example: For development - override core-provider with local chart
-  core-provider:
+  composable-operations:
     stepConfig:
       install-core-provider:
         helmValues:
@@ -75,7 +75,7 @@ components:
               DEBUG: "true"
   
 
-  oasgen-provider:
+  operator-generator:
     stepConfig:
       install-oasgen-provider:
         helmValues:
