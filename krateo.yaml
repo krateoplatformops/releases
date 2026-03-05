@@ -85,7 +85,6 @@ steps:
   - id: install-authn
     type: chart
     with:
-      releaseName: authn2
       repo: authn
       url: https://charts.krateo.io
       version: 0.22.2
