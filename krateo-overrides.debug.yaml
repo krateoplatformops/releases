@@ -33,7 +33,6 @@ components:
   backend:
     stepConfig:
       install-authn:
-        releaseName: authn2
         helmValues:
           env:
             AUTHN_DEBUG: "true"  # only applies to install-authn step
