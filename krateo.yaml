@@ -81,7 +81,7 @@ steps:
       stringData:
         JWT_SIGN_KEY: Lhi4GxBc0LhE
 
-  # 2. Core authentication service (no dependencies)
+  # 2. Core authentication service
   - id: install-authn
     type: chart
     with:
@@ -111,7 +111,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].nodePort
 
-  # 4. Event tracking service (no dependencies)
+  # 4. Event tracking service 
   - id: install-snowplow
     type: chart
     with:
@@ -139,7 +139,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].nodePort
 
-  # 6. Event routing (no dependencies)
+  # 6. Event routing
   - id: install-eventrouter
     type: chart
     with:
@@ -152,7 +152,7 @@ steps:
           repository: ghcr.io/krateoplatformops/eventstack/eventrouter
           pullPolicy: IfNotPresent
 
-  # 7. Event storage backend (no dependencies)
+  # 7. Event storage backend
   - id: install-eventsse-etcd
     type: chart
     with:
@@ -168,7 +168,7 @@ steps:
           size: 6Gi
         quotaBackendBytes: "3221225472"
 
-  # 8. Event streaming engine (needs eventsse-etcd from step 7)
+  # 8. Event streaming engine
   - id: install-eventsse
     type: chart
     with:
@@ -209,7 +209,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].port
 
-  # 10. Event cleanup (needs eventsse from step 8)
+  # 10. Event cleanup
   - id: install-sweeper
     type: chart
     with:
@@ -222,7 +222,7 @@ steps:
           repository: ghcr.io/krateoplatformops/eventstack/sweeper
           pullPolicy: IfNotPresent
 
-  # 11. Frontend UI (needs authn, snowplow, eventsse from steps 2, 4, 8)
+  # 11. Frontend UI
   - id: install-frontend
     type: chart
     with:
@@ -245,7 +245,7 @@ steps:
           INIT: /call?resource=navmenus&apiVersion=widgets.templates.krateo.io/v1beta1&name=sidebar-nav-menu&namespace=krateo-system
           ROUTES_LOADER: /call?resource=routesloaders&apiVersion=widgets.templates.krateo.io/v1beta1&name=routes-loader&namespace=krateo-system
 
-  # 12. Portal starter (needs frontend from step 11)
+  # 12. Portal starter
   - id: install-portal
     type: chart
     with:
@@ -254,7 +254,7 @@ steps:
       url: https://marketplace.krateo.io
       version: 1.2.0
 
-  # 13. Core composition engine (needs frontend from step 11)
+  # 13. Core composition engine
   - id: install-core-provider
     type: chart
     with:
@@ -267,6 +267,8 @@ steps:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
           tag: 1.0.0-rc1
+        env:
+          CORE_PROVIDER_MAX_RECONCILE_RATE: "1" # Better to set this to 1 (no concurrency) before solving crdgen bug
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
@@ -277,7 +279,7 @@ steps:
             repository: ghcr.io/krateoplatformops/chart-inspector
             pullPolicy: IfNotPresent
 
-  # 14. OAS provider (needs core-provider from step 13)
+  # 14. OAS provider for operator generation from OpenAPI specs
   - id: install-oasgen-provider
     type: chart
     with:
@@ -340,7 +342,7 @@ steps:
           repository: ghcr.io/krateoplatformops/finops-operator-focus
           pullPolicy: IfNotPresent
 
-  # 18. FinOps database handler (needs cratedb from step 15)
+  # 18. FinOps database handler
   - id: install-finops-database-handler
     type: chart
     with:
@@ -372,7 +374,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].port
 
-  # 20. FinOps database uploader (needs database-handler from step 18)
+  # 20. FinOps database uploader
   - id: install-finops-database-handler-uploader
     type: chart
     with:
@@ -398,7 +400,7 @@ steps:
       url: https://charts.krateo.io
       version: 0.1.1
 
-  # 22. FinOps composition parser (needs database-handler from step 18)
+  # 22. FinOps composition parser
   - id: install-finops-composition-definition-parser
     type: chart
     with:
@@ -415,7 +417,7 @@ steps:
           DATABASE_CONFIG_NAME: finops-database-handler
           DATABASE_CONFIG_NAMESPACE: krateo-system
 
-  # 23. FinOps scraper (needs database-handler from step 18)
+  # 23. FinOps scraper
   - id: install-finops-operator-scraper
     type: chart
     with:
@@ -430,7 +432,7 @@ steps:
         env:
           URL_DB_WEBSERVICE: http://finops-database-handler.krateo-system.svc.cluster.local:${FINOPS_DATABASE_HANDLER_INTERNAL_PORT}
 
-  # 24. Policy Engine (needs core-provider from step 13)
+  # 24. Policy Engine
   - id: install-opa
     type: chart
     with:
