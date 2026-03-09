@@ -33,17 +33,19 @@ components:
   backend:
     stepConfig:
       install-authn:
-        helmValues:
-          env:
-            AUTHN_DEBUG: "true"  # only applies to install-authn step
+        with:
+          values:
+            env:
+              AUTHN_DEBUG: "true"  # only applies to install-authn step
 
   # Example: Customize frontend single chart step via stepConfig
   frontend:
     stepConfig:
       install-frontend:
-        helmValues:
-          env:
-            FRONTEND_DEBUG: "true"  # only applies to install-frontend step
+        with:
+          values:
+            env:
+              FRONTEND_DEBUG: "true"  # only applies to install-frontend step
 
   # Example: Customize eventsse component
   # - helmDefaults: applied to all eventsse chart steps (install-eventsse-etcd, install-eventsse, install-sweeper)
@@ -51,9 +53,10 @@ components:
   eventstack:
     stepConfig:
       install-eventsse:
-        helmValues:
-          env:
-            EVENTSSE_DEBUG: "true"  # only applies to install-eventsse step
+          with:
+            values:
+              env:
+                EVENTSSE_DEBUG: "true"  # only applies to install-eventsse step
 
   # Example: enable optional FinOps module in prod, disable in dev
   finops:
@@ -63,7 +66,7 @@ components:
   composable-operations:
     stepConfig:
       install-core-provider:
-        helmValues:
+        with:
           env:
             CORE_PROVIDER_DEBUG: "true"
           cdc:
@@ -72,12 +75,11 @@ components:
           chartInspector:
             env:
               DEBUG: "true"
-  
 
   operator-generator:
     stepConfig:
       install-oasgen-provider:
-        helmValues:
+        with:
           env:
             OASGEN_PROVIDER_DEBUG: "true"
           rdc:
