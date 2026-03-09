@@ -67,24 +67,26 @@ components:
     stepConfig:
       install-core-provider:
         with:
-          env:
-            CORE_PROVIDER_DEBUG: "true"
-          cdc:
+          values:
             env:
-              COMPOSITION_CONTROLLER_DEBUG: "true"
-          chartInspector:
-            env:
-              DEBUG: "true"
+              CORE_PROVIDER_DEBUG: "true"
+            cdc:
+              env:
+                COMPOSITION_CONTROLLER_DEBUG: "true"
+            chartInspector:
+              env:
+                DEBUG: "true"
 
   operator-generator:
     stepConfig:
       install-oasgen-provider:
         with:
-          env:
-            OASGEN_PROVIDER_DEBUG: "true"
-          rdc:
+          values:
             env:
-              REST_CONTROLLER_DEBUG: "true"
+              OASGEN_PROVIDER_DEBUG: "true"
+            rdc:
+              env:
+                REST_CONTROLLER_DEBUG: "true"
   
 
 
