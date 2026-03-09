@@ -261,11 +261,12 @@ steps:
       releaseName: core-provider
       repo: core-provider
       url: https://charts.krateo.io
-      version: 0.35.2
+      version: 1.0.0-rc1
       values:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
+          tag: 1.0.0-rc1
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
