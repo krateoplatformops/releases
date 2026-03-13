@@ -11,7 +11,6 @@ componentsDefinition:
   backend:
     description: "Core backend services (API, controllers, composition engine)"
     steps:
-      - create-jwt-sign-key
       - install-authn
       - extract-authn-port
       - install-snowplow
@@ -68,20 +67,7 @@ componentsDefinition:
 # ============================================================================
 
 steps:
-  # 1. Create JWT signing secret
-  - id: create-jwt-sign-key
-    type: object
-    with:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: jwt-sign-key
-        namespace: krateo-system
-      type: Opaque
-      stringData:
-        JWT_SIGN_KEY: Lhi4GxBc0LhE
-
-  # 2. Core authentication service
+  # Core authentication service
   - id: install-authn
     type: chart
     with:
@@ -98,7 +84,7 @@ steps:
         env:
           AUTHN_KUBECONFIG_SERVER_URL: null
 
-  # 3. Extract authn service port for downstream use
+  # Extract authn service port for downstream use
   - id: extract-authn-port
     type: var
     with:
@@ -111,7 +97,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].nodePort
 
-  # 4. Event tracking service 
+  # Event tracking service 
   - id: install-snowplow
     type: chart
     with:
@@ -126,7 +112,7 @@ steps:
           type: NodePort
           nodePort: 30081
 
-  # 5. Extract snowplow port
+  # Extract snowplow port
   - id: extract-snowplow-port
     type: var
     with:
@@ -139,7 +125,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].nodePort
 
-  # 6. Event routing
+  # Event routing
   - id: install-eventrouter
     type: chart
     with:
@@ -152,7 +138,7 @@ steps:
           repository: ghcr.io/krateoplatformops/eventstack/eventrouter
           pullPolicy: IfNotPresent
 
-  # 7. Event storage backend
+  # Event storage backend
   - id: install-eventsse-etcd
     type: chart
     with:
@@ -168,7 +154,7 @@ steps:
           size: 6Gi
         quotaBackendBytes: "3221225472"
 
-  # 8. Event streaming engine
+  # Event streaming engine
   - id: install-eventsse
     type: chart
     with:
@@ -184,7 +170,7 @@ steps:
           type: NodePort
           nodePort: 30083
 
-  # 9. Extract eventsse ports
+  # Extract eventsse ports
   - id: extract-eventsse-port
     type: var
     with:
@@ -209,7 +195,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].port
 
-  # 10. Event cleanup
+  # Event cleanup
   - id: install-sweeper
     type: chart
     with:
@@ -222,7 +208,7 @@ steps:
           repository: ghcr.io/krateoplatformops/eventstack/sweeper
           pullPolicy: IfNotPresent
 
-  # 11. Frontend UI
+  # Frontend UI
   - id: install-frontend
     type: chart
     with:
@@ -245,7 +231,7 @@ steps:
           INIT: /call?resource=navmenus&apiVersion=widgets.templates.krateo.io/v1beta1&name=sidebar-nav-menu&namespace=krateo-system
           ROUTES_LOADER: /call?resource=routesloaders&apiVersion=widgets.templates.krateo.io/v1beta1&name=routes-loader&namespace=krateo-system
 
-  # 12. Portal starter
+  # Portal starter
   - id: install-portal
     type: chart
     with:
@@ -254,7 +240,7 @@ steps:
       url: https://marketplace.krateo.io
       version: 1.2.0
 
-  # 13. Core composition engine
+  # Core composition engine
   - id: install-core-provider
     type: chart
     with:
@@ -279,7 +265,7 @@ steps:
             repository: ghcr.io/krateoplatformops/chart-inspector
             pullPolicy: IfNotPresent
 
-  # 14. OAS provider for operator generation from OpenAPI specs
+  # OAS provider for operator generation from OpenAPI specs
   - id: install-oasgen-provider
     type: chart
     with:
@@ -301,7 +287,7 @@ steps:
   # Can be disabled by removing these steps or setting enabled: false on them
   # ============================================================================
 
-  # 15. FinOps database backend
+  # FinOps database backend
   - id: install-finops-cratedb
     type: chart
     with:
@@ -316,7 +302,7 @@ steps:
         openshift:
           enabled: false
 
-  # 16. FinOps exporter
+  # FinOps exporter
   - id: install-finops-operator-exporter
     type: chart
     with:
@@ -329,7 +315,7 @@ steps:
           repository: ghcr.io/krateoplatformops/finops-operator-exporter
           pullPolicy: IfNotPresent
 
-  # 17. FinOps cost analyzer
+  # FinOps cost analyzer
   - id: install-finops-operator-focus
     type: chart
     with:
@@ -342,7 +328,7 @@ steps:
           repository: ghcr.io/krateoplatformops/finops-operator-focus
           pullPolicy: IfNotPresent
 
-  # 18. FinOps database handler
+  # FinOps database handler
   - id: install-finops-database-handler
     type: chart
     with:
@@ -361,7 +347,7 @@ steps:
           CRATE_HOST: cratedb.krateo-system.svc.cluster.local
           cratedbUserSystemName: cratedb-system-credentials
 
-  # 19. Extract finops database handler port
+  # Extract finops database handler port
   - id: extract-finops-database-handler-port
     type: var
     with:
@@ -374,7 +360,7 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].port
 
-  # 20. FinOps database uploader
+  # FinOps database uploader
   - id: install-finops-database-handler-uploader
     type: chart
     with:
@@ -391,7 +377,7 @@ steps:
           FINOPS_DATABASE_HANDLER_ENDPOINT_NAMESPACE: krateo-system
           DATABASE_CONFIG_NAMESPACE: krateo-system
 
-  # 21. FinOps notebooks
+  # FinOps notebooks
   - id: install-finops-notebooks
     type: chart
     with:
@@ -400,7 +386,7 @@ steps:
       url: https://charts.krateo.io
       version: 0.1.1
 
-  # 22. FinOps composition parser
+  # FinOps composition parser
   - id: install-finops-composition-definition-parser
     type: chart
     with:
@@ -417,7 +403,7 @@ steps:
           DATABASE_CONFIG_NAME: finops-database-handler
           DATABASE_CONFIG_NAMESPACE: krateo-system
 
-  # 23. FinOps scraper
+  # FinOps scraper
   - id: install-finops-operator-scraper
     type: chart
     with:
@@ -432,7 +418,7 @@ steps:
         env:
           URL_DB_WEBSERVICE: http://finops-database-handler.krateo-system.svc.cluster.local:${FINOPS_DATABASE_HANDLER_INTERNAL_PORT}
 
-  # 24. Policy Engine
+  # Policy Engine
   - id: install-opa
     type: chart
     with:
