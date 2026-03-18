@@ -1,0 +1,92 @@
+---
+# ServiceAccount for the cleanup job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: uninstall-old-components
+  namespace: krateo-system
+
+---
+# ClusterRole to manage helm releases (secrets in any namespace)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: uninstall-old-components
+rules:
+  # Read/list secrets where helm stores releases
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "delete"]
+  # Verify release existence
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+
+---
+# ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: uninstall-old-components
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: uninstall-old-components
+subjects:
+  - kind: ServiceAccount
+    name: uninstall-old-components
+    namespace: krateo-system
+
+---
+# Job to uninstall old components
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: uninstall-old-components-{{ .JobNameSuffix }}
+  namespace: "{{ .Namespace }}"
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      name: uninstall-old-components
+    spec:
+      serviceAccountName: uninstall-old-components
+      restartPolicy: Never
+      containers:
+      - name: helm-cleanup
+        image: alpine/helm:3.20
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NAMESPACE
+          value: "{{ .Namespace }}"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          NAMESPACE=${NAMESPACE:-krateo-system}
+          
+          # List of components to uninstall (reversed order for dependency safety)
+          COMPONENTS="finops-composition-definition-parser sweeper eventsse eventsse-etcd eventrouter"
+          
+          echo "Checking for old components in namespace: $NAMESPACE..."
+          
+          FAILED_COUNT=0
+          for COMPONENT in $COMPONENTS; do
+            # Check if the helm release exists using helm status
+            if helm status "$COMPONENT" --namespace "$NAMESPACE" > /dev/null 2>&1; then
+              echo "Uninstalling $COMPONENT..."
+              if helm uninstall "$COMPONENT" --namespace "$NAMESPACE"; then
+                echo "Successfully uninstalled $COMPONENT."
+              else
+                echo "Warning: Failed to uninstall $COMPONENT (may not exist or already deleted)."
+                FAILED_COUNT=$((FAILED_COUNT + 1))
+              fi
+            else
+              echo "Component $COMPONENT not found, skipping."
+            fi
+          done
+          
+          echo "Cleanup process completed."
+          
+          # Exit with success if at least one component was processed
+          exit 0

@@ -22,8 +22,8 @@ componentsDefinition:
       - install-cnpg
       - install-pg-cluster
   
-  db:
-    description: "Database preparation"
+  db-maintenance:
+    description: "Database preparation and maintenance tasks like partitioning and vacuuming"
     steps:
       - install-deviser
 
