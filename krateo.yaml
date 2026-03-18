@@ -381,9 +381,7 @@ steps:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
-          tag: 1.0.0-rc1
-        env:
-          CORE_PROVIDER_MAX_RECONCILE_RATE: "1" # Better to set this to 1 (no concurrency) before solving crdgen bug
+          tag: 1.0.0-rc2
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
