@@ -7,23 +7,7 @@ metadata:
   namespace: krateo-system
 
 ---
-# ClusterRole to manage helm releases (secrets in any namespace)
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: uninstall-old-components
-rules:
-  # Read/list secrets where helm stores releases
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get", "list", "delete"]
-  # Verify release existence
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["list"]
-
----
-# ClusterRoleBinding
+# ClusterRoleBinding to grant cluster-admin permissions
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -31,7 +15,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: uninstall-old-components
+  name: cluster-admin
 subjects:
   - kind: ServiceAccount
     name: uninstall-old-components
@@ -45,6 +29,7 @@ metadata:
   name: uninstall-old-components-{{ .JobNameSuffix }}
   namespace: "{{ .Namespace }}"
 spec:
+  ttlSecondsAfterFinished: 300
   backoffLimit: 1
   template:
     metadata:
@@ -54,7 +39,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: helm-cleanup
-        image: alpine/helm:3.20
+        image: dtzar/helm-kubectl:3.19.1
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
@@ -70,23 +55,22 @@ spec:
           
           echo "Checking for old components in namespace: $NAMESPACE..."
           
-          FAILED_COUNT=0
           for COMPONENT in $COMPONENTS; do
-            # Check if the helm release exists using helm status
-            if helm status "$COMPONENT" --namespace "$NAMESPACE" > /dev/null 2>&1; then
-              echo "Uninstalling $COMPONENT..."
-              if helm uninstall "$COMPONENT" --namespace "$NAMESPACE"; then
-                echo "Successfully uninstalled $COMPONENT."
-              else
-                echo "Warning: Failed to uninstall $COMPONENT (may not exist or already deleted)."
-                FAILED_COUNT=$((FAILED_COUNT + 1))
-              fi
-            else
+            echo "Attempting to uninstall $COMPONENT..."
+            OUTPUT=$(helm uninstall "$COMPONENT" --namespace "$NAMESPACE" 2>&1)
+            EXIT_CODE=$?
+            
+            if echo "$OUTPUT" | grep -q "no such release"; then
               echo "Component $COMPONENT not found, skipping."
+            elif [ $EXIT_CODE -eq 0 ]; then
+              echo "Successfully uninstalled $COMPONENT."
+            else
+              echo "Warning: Failed to uninstall $COMPONENT."
+              echo "Error details: $OUTPUT"
             fi
           done
+
+          kubectl delete pvc etcd-data-eventsse-etcd-0 -n "$NAMESPACE" || echo "Warning: Failed to delete PVC etcd-data-eventsse-etcd-0. It may not exist or may be in use."
           
           echo "Cleanup process completed."
-          
-          # Exit with success if at least one component was processed
           exit 0
