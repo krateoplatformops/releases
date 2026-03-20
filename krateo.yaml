@@ -9,22 +9,36 @@
 # ============================================================================
 componentsDefinition:
   backend:
-    description: "Core backend services (API, controllers, composition engine)"
+    description: "Core backend services"
     steps:
       - install-authn
       - extract-authn-port
       - install-snowplow
       - extract-snowplow-port
-
-  eventstack:
-    description: "Event streaming and storage stack (EventRouter + EventSSE)"
+  
+  cnpg:
+    description: "CloudNativePG operator, PostgreSQL cluster, and database"
     steps:
-      - install-eventrouter
-      - install-eventsse-etcd
-      - install-eventsse
-      - extract-eventsse-port
-      - extract-eventsse-internal-port
-      - install-sweeper
+      - install-cnpg
+      - install-pg-cluster
+  
+  db-maintenance:
+    description: "Database preparation and maintenance tasks like partitioning and vacuuming"
+    steps:
+      - install-deviser
+
+  resources-stack:
+    description: "Dedicated APIs for resources"
+    steps:
+      - install-resources-ingester
+      - install-resources-presenter
+
+  events-stack:
+    description: "Event streaming and storage stack"
+    steps:
+      - install-events-ingester
+      - install-events-presenter
+      - extract-events-presenter-port
 
   frontend:
     description: "Web UI and platform dashboard"
@@ -56,7 +70,6 @@ componentsDefinition:
       - extract-finops-database-handler-port
       - install-finops-database-handler-uploader
       - install-finops-notebooks
-      - install-finops-composition-definition-parser
       - install-finops-operator-scraper
       - install-opa
 
@@ -125,88 +138,202 @@ steps:
           namespace: krateo-system
         selector: .spec.ports[0].nodePort
 
-  # Event routing
-  - id: install-eventrouter
+  - id: install-cnpg
     type: chart
     with:
-      releaseName: eventrouter
-      repo: eventrouter
-      url: https://charts.krateo.io
-      version: 0.6.5
+      releaseName: cnpg
+      repo: cloudnative-pg
+      url: https://cloudnative-pg.github.io/charts
+      version: 0.27.1
+      wait: true
+      timeout: 15m
+      # default values for the CNPG operator
+
+  - id: install-pg-cluster # CNPG Cluster + database `krateo-db`
+    type: chart
+    with:
+      releaseName: pg-cluster
+      repo: cluster
+      url: https://cloudnative-pg.github.io/charts
+      version: 0.5.0
+      wait: true
+      timeout: 15m
       values:
-        image:
-          repository: ghcr.io/krateoplatformops/eventstack/eventrouter
-          pullPolicy: IfNotPresent
+        # fullnameOverride controls the name of every K8s resource produced.
+        fullnameOverride: "pg-cluster"
+        namespaceOverride: ""            # Defaults to the Helm release namespace
 
-  # Event storage backend
-  - id: install-eventsse-etcd
+        # Engine type & version
+        type: postgresql
+        version:
+          postgresql: "18"              # PostgreSQL major version
+
+        # Cluster mode
+        mode: standalone
+
+        cluster:
+          # 3 instances = 1 primary (read-write) + 2 standbys (read-only)
+          # CNPG exposes three services automatically:
+          #   <name>-rw  → primary only   (writes + reads)
+          #   <name>-ro  → standbys only  (reads only)
+          #   <name>-r   → all instances  (reads)
+          instances: 3
+
+          storage:
+            size: 10Gi
+
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+
+          # Declarative role management
+          roles:
+            - name: krateo-db-user
+              comment: "Owner of the krateo-db database"
+              login: true
+              passwordSecret:
+                name: krateo-db-user  # Kubernetes Secret with username and password for the owner role, it must exist before CNPG cluster creation
+
+        # Monitoring configuration
+        #  monitoring:
+        #    # Enable monitoring with Prometheus
+        #    enabled: true # If true, it will create the PrometheusRule
+        #    podMonitor:
+        #      enabled: false # Explicitely set to false since it is deprecated in favor of manually creating a PodMonitor
+
+        # Declarative database management via the CNPG "Database" CRD.
+        # Each entry below produces a separate Database object in Kubernetes.
+        databases:
+          # Database 1: krateo-db
+          # Purpose: stores resources and k8s events
+          - name: krateo-db
+            owner: krateo-db-user         # Must match a role in cluster.roles above
+
+  - id: install-deviser
     type: chart
     with:
-      releaseName: eventsse-etcd
-      repo: etcd
+      releaseName: deviser
+      repo: deviser
       url: https://charts.krateo.io
-      version: 3.6.6
+      version: 0.4.1
       values:
-        image:
-          repository: ghcr.io/krateoplatformops/etcd
-          pullPolicy: IfNotPresent
-        persistence:
-          size: 6Gi
-        quotaBackendBytes: "3221225472"
+        config:
+          DEBUG: "true"
+          PORT: "8081"
 
-  # Event streaming engine
-  - id: install-eventsse
+          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_NAME: krateo-db
+          DB_PARAMS: "sslmode=disable&connect_timeout=5"
+          DB_READY_TIMEOUT: "5m"
+
+          PM_MAX_PARTITIONS_SIZE: "1073741824" # 1GB
+          PM_TRIGGER_RATIO: "0.75"
+          PM_TARGET_RATIO: "0.60"
+          PM_RETENTION_DAYS: "2"
+        
+        secret:
+          name: krateo-db
+
+  - id: install-resources-ingester
     type: chart
     with:
-      releaseName: eventsse
-      repo: eventsse
+      releaseName: resources-ingester
+      repo: resources-ingester
       url: https://charts.krateo.io
-      version: 0.5.9
+      version: 1.0.0
       values:
-        image:
-          repository: ghcr.io/krateoplatformops/eventstack/eventsse
-          pullPolicy: IfNotPresent
-        service:
-          type: NodePort
-          nodePort: 30083
+        config:
+          DEBUG: "true"
+          PORT: "8084"
 
-  # Extract eventsse ports
-  - id: extract-eventsse-port
-    type: var
-    with:
-      name: EVENTSSE_PORT
-      valueFrom:
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: eventsse-external
-          namespace: krateo-system
-        selector: .spec.ports[0].nodePort
+          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_NAME: krateo-db
+          DB_PARAMS: "sslmode=disable"
+          DB_READY_TIMEOUT: "5m"
 
-  - id: extract-eventsse-internal-port
-    type: var
-    with:
-      name: EVENTSSE_INTERNAL_PORT
-      valueFrom:
-        apiVersion: v1
-        kind: Service
-        metadata:
-          name: eventsse-internal
-          namespace: krateo-system
-        selector: .spec.ports[0].port
-
-  # Event cleanup
-  - id: install-sweeper
+        secret:
+          name: krateo-db
+        
+  - id: install-resources-presenter
     type: chart
     with:
-      releaseName: sweeper
-      repo: sweeper
+      releaseName: resources-presenter
+      repo: resources-presenter
+      url: https://charts.krateo.io
+      version: 0.4.1
+      values:
+        config:
+          DEBUG: "true"
+          PORT: "8085"
+
+          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_NAME: krateo-db
+          DB_PARAMS: "sslmode=disable"
+          DB_READY_TIMEOUT: "5m"
+
+        dbSecret:
+          name: krateo-db
+        
+        jwtSignKeySecret:
+          name: jwt-sign-key
+
+  - id: install-events-ingester
+    type: chart
+    with:
+      releaseName: events-ingester
+      repo: events-ingester
       url: https://charts.krateo.io
       version: 0.2.0
+      values:        
+        config:
+          DEBUG: "true"
+          PORT: "8082"
+
+          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_NAME: krateo-db
+          DB_PARAMS: "sslmode=disable"
+          DB_READY_TIMEOUT: "5m"
+
+          NAMESPACES: "krateo-system" # Comma-separated list of namespaces to watch for events.
+        
+        secret:
+          name: krateo-db
+
+  - id: install-events-presenter
+    type: chart
+    with:
+      releaseName: events-presenter
+      repo: events-presenter
+      url: https://charts.krateo.io
+      version: 0.4.2
       values:
-        image:
-          repository: ghcr.io/krateoplatformops/eventstack/sweeper
-          pullPolicy: IfNotPresent
+        config:
+          DEBUG: "true"
+          PORT: "8083"
+
+          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_NAME: krateo-db
+          DB_PARAMS: "sslmode=disable"
+          DB_READY_TIMEOUT: "5m"
+        
+        secret:
+          name: krateo-db
+
+  - id: extract-events-presenter-port
+    type: var
+    with:
+      name: EVENTSSE_PORT # Legacy name
+      valueFrom:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: events-presenter
+          namespace: krateo-system
+        selector: .spec.ports[0].nodePort
 
   # Frontend UI
   - id: install-frontend
@@ -216,6 +343,8 @@ steps:
       repo: frontend
       url: https://charts.krateo.io
       version: 1.0.5
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/frontend
@@ -252,9 +381,7 @@ steps:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
-          tag: 1.0.0-rc1
-        env:
-          CORE_PROVIDER_MAX_RECONCILE_RATE: "1" # Better to set this to 1 (no concurrency) before solving crdgen bug
+          tag: 1.0.0-rc2
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
@@ -311,6 +438,8 @@ steps:
       repo: finops-operator-exporter
       url: https://charts.krateo.io
       version: 0.5.2
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/finops-operator-exporter
@@ -324,6 +453,8 @@ steps:
       repo: finops-operator-focus
       url: https://charts.krateo.io
       version: 0.4.3
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/finops-operator-focus
@@ -386,23 +517,6 @@ steps:
       repo: finops-notebooks
       url: https://charts.krateo.io
       version: 0.1.1
-
-  # FinOps composition parser
-  - id: install-finops-composition-definition-parser
-    type: chart
-    with:
-      releaseName: finops-composition-definition-parser
-      repo: finops-composition-definition-parser
-      url: https://charts.krateo.io
-      version: 0.1.4
-      values:
-        image:
-          repository: ghcr.io/krateoplatformops/finops-composition-definition-parser
-          pullPolicy: IfNotPresent
-        env:
-          URL_DATABASE_HANDLER_PRICING_NOTEBOOK: http://finops-database-handler.krateo-system.svc.cluster.local:${FINOPS_DATABASE_HANDLER_INTERNAL_PORT}/compute/pricingparser
-          DATABASE_CONFIG_NAME: finops-database-handler
-          DATABASE_CONFIG_NAMESPACE: krateo-system
 
   # FinOps scraper
   - id: install-finops-operator-scraper

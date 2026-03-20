@@ -47,17 +47,6 @@ components:
             env:
               FRONTEND_DEBUG: "true"  # only applies to install-frontend step
 
-  # Example: Customize eventsse component
-  # - helmDefaults: applied to all eventsse chart steps (install-eventsse-etcd, install-eventsse, install-sweeper)
-  # - stepConfig:   refine settings for a specific chart step only
-  eventstack:
-    stepConfig:
-      install-eventsse:
-          with:
-            values:
-              env:
-                EVENTSSE_DEBUG: "true"  # only applies to install-eventsse step
-
   # Example: enable optional FinOps module in prod, disable in dev
   finops:
     enabled: false
