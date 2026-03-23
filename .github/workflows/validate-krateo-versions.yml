@@ -16,8 +16,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
       - name: Validate chart versions consistency
-        run: bash scripts/validate-versions.sh
+        run: python3 scripts/validate-config.py
 
       - name: Comment PR with results
         if: github.event_name == 'pull_request' && failure()
@@ -28,5 +36,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '❌ Version consistency check failed. Please ensure all krateo*.yaml files have matching chart versions across profiles. See workflow logs for details.'
+              body: '❌ Configuration consistency check failed. Please ensure all krateo*.yaml files have matching chart versions, repositories, URLs, release names, and container image tags. See workflow logs for details.'
             })
