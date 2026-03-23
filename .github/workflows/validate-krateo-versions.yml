@@ -30,10 +30,19 @@ jobs:
         run: pip install pyyaml
 
       - name: Validate chart versions consistency
-        run: python3 scripts/validate-config.py
+        id: validate
+        run: python3 scripts/validate-config.py > validation_output.txt 2>&1 || true
+
+      - name: Read validation output
+        id: output
+        if: always()
+        run: |
+          echo "validation_result<<EOF" >> $GITHUB_OUTPUT
+          cat validation_output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Comment PR with results
-        if: github.event_name == 'pull_request' && failure()
+        if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -41,5 +50,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '❌ Configuration consistency check failed. Please ensure all krateo*.yaml files have matching chart versions, repositories, URLs, release names, and container image tags. See workflow logs for details.'
+              body: '```\n${{ steps.output.outputs.validation_result }}\n```'
             })
