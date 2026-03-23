@@ -1,0 +1,32 @@
+name: Validate Krateo Versions Consistency
+
+on:
+  pull_request:
+    paths:
+      - 'krateo*.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'krateo*.yaml'
+
+jobs:
+  validate-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate chart versions consistency
+        run: bash scripts/validate-versions.sh
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ Version consistency check failed. Please ensure all krateo*.yaml files have matching chart versions across profiles. See workflow logs for details.'
+            })
