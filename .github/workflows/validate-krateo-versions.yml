@@ -1,5 +1,10 @@
 name: Validate Krateo Versions Consistency
 
+permissions:
+  issues: write          
+  pull-requests: write   
+  contents: read        
+
 on:
   pull_request:
     paths:
