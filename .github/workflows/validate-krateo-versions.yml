@@ -31,7 +31,7 @@ jobs:
 
       - name: Validate chart versions consistency
         id: validate
-        run: python3 scripts/validate-config.py > validation_output.txt 2>&1 || true
+        run: python3 scripts/validate-config.py > validation_output.txt 2>&1
 
       - name: Read validation output
         id: output
