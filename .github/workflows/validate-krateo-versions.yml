@@ -1,0 +1,57 @@
+name: Validate Krateo Versions Consistency
+
+permissions:
+  issues: write          
+  pull-requests: write   
+  contents: read        
+
+on:
+  pull_request:
+    paths:
+      - 'krateo*.yaml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'krateo*.yaml'
+
+jobs:
+  validate-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Validate chart versions consistency
+        id: validate
+        run: python3 scripts/validate-config.py > validation_output.txt 2>&1
+
+      - name: Read validation output
+        id: output
+        if: always()
+        run: |
+          echo "validation_result<<EOF" >> $GITHUB_OUTPUT
+          cat validation_output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        env:
+          VALIDATION_OUTPUT: ${{ steps.output.outputs.validation_result }}
+        with:
+          script: |
+            const output = process.env.VALIDATION_OUTPUT;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '```\n' + output + '\n```'
+            })

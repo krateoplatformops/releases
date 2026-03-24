@@ -1,0 +1,76 @@
+---
+# ServiceAccount for the cleanup job
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: uninstall-old-components
+  namespace: krateo-system
+
+---
+# ClusterRoleBinding to grant cluster-admin permissions
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: uninstall-old-components
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: uninstall-old-components
+    namespace: krateo-system
+
+---
+# Job to uninstall old components
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: uninstall-old-components-{{ .JobNameSuffix }}
+  namespace: "{{ .Namespace }}"
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 1
+  template:
+    metadata:
+      name: uninstall-old-components
+    spec:
+      serviceAccountName: uninstall-old-components
+      restartPolicy: Never
+      containers:
+      - name: helm-cleanup
+        image: dtzar/helm-kubectl:3.19.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NAMESPACE
+          value: "{{ .Namespace }}"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          NAMESPACE=${NAMESPACE:-krateo-system}
+          
+          # List of components to uninstall (reversed order for dependency safety)
+          COMPONENTS="finops-composition-definition-parser sweeper eventsse eventsse-etcd eventrouter"
+          
+          echo "Checking for old components in namespace: $NAMESPACE..."
+          
+          for COMPONENT in $COMPONENTS; do
+            echo "Attempting to uninstall $COMPONENT..."
+            OUTPUT=$(helm uninstall "$COMPONENT" --namespace "$NAMESPACE" 2>&1)
+            EXIT_CODE=$?
+            
+            if echo "$OUTPUT" | grep -q "no such release"; then
+              echo "Component $COMPONENT not found, skipping."
+            elif [ $EXIT_CODE -eq 0 ]; then
+              echo "Successfully uninstalled $COMPONENT."
+            else
+              echo "Warning: Failed to uninstall $COMPONENT."
+              echo "Error details: $OUTPUT"
+            fi
+          done
+
+          kubectl delete pvc etcd-data-eventsse-etcd-0 -n "$NAMESPACE" || echo "Warning: Failed to delete PVC etcd-data-eventsse-etcd-0. It may not exist or may be in use."
+          
+          echo "Cleanup process completed."
+          exit 0
