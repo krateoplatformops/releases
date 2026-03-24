@@ -297,9 +297,7 @@ steps:
           DB_NAME: krateo-db
           DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
-
-          NAMESPACES: "krateo-system" # Comma-separated list of namespaces to watch for events.
-        
+   
         secret:
           name: krateo-db
 
