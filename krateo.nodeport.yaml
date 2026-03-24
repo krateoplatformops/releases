@@ -368,7 +368,7 @@ steps:
       releaseName: portal
       repo: portal
       url: https://marketplace.krateo.io
-      version: 1.3.0
+      version: 1.3.2
 
   # Core composition engine
   - id: install-core-provider
