@@ -219,7 +219,7 @@ steps:
       releaseName: deviser
       repo: deviser
       url: https://charts.krateo.io
-      version: 0.4.2
+      version: 0.5.0
       values:
         config:
           DEBUG: "true"
@@ -227,7 +227,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable&connect_timeout=5"
           DB_READY_TIMEOUT: "5m"
 
           PM_MAX_PARTITIONS_SIZE: "1073741824" # 1GB
@@ -252,7 +251,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
 
         secret:
@@ -264,15 +262,14 @@ steps:
       releaseName: resources-presenter
       repo: resources-presenter
       url: https://charts.krateo.io
-      version: 0.6.0
+      version: 0.9.0
       values:
         config:
           DEBUG: "true"
           PORT: "8085"
 
-          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_HOST: pg-cluster-ro.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
 
         dbSecret:
@@ -287,7 +284,7 @@ steps:
       releaseName: events-ingester
       repo: events-ingester
       url: https://charts.krateo.io
-      version: 0.2.0
+      version: 0.3.0
       values:        
         config:
           DEBUG: "true"
@@ -295,7 +292,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
    
         secret:
@@ -307,7 +303,7 @@ steps:
       releaseName: events-presenter
       repo: events-presenter
       url: https://charts.krateo.io
-      version: 0.4.3
+      version: 0.5.0
       values:
         service:
           type: NodePort
@@ -318,7 +314,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
         
         secret:
@@ -382,7 +377,7 @@ steps:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
-          tag: 1.0.0-rc2
+          tag: 1.0.0-rc3
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
@@ -401,7 +396,7 @@ steps:
       releaseName: oasgen-provider
       repo: oasgen-provider
       url: https://charts.krateo.io
-      version: 0.9.0
+      version: 0.11.0
       values:
         image:
           repository: ghcr.io/krateoplatformops/oasgen-provider
