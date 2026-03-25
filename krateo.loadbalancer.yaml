@@ -255,7 +255,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable&connect_timeout=5"
           DB_READY_TIMEOUT: "5m"
 
           PM_MAX_PARTITIONS_SIZE: "1073741824" # 1GB
@@ -280,7 +279,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
 
         secret:
@@ -292,7 +290,7 @@ steps:
       releaseName: resources-presenter
       repo: resources-presenter
       url: https://charts.krateo.io
-      version: 0.6.0
+      version: 0.9.0
       service:
         type: LoadBalancer
         port: 8083
@@ -301,9 +299,8 @@ steps:
           DEBUG: "true"
           PORT: "8085"
 
-          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_HOST: pg-cluster-ro.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
 
         dbSecret:
@@ -326,7 +323,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
         
         secret:
@@ -348,7 +344,6 @@ steps:
 
           DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
           DB_NAME: krateo-db
-          DB_PARAMS: "sslmode=disable"
           DB_READY_TIMEOUT: "5m"
         
         secret:
