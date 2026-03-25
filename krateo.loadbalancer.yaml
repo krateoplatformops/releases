@@ -420,7 +420,7 @@ steps:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
-          tag: 1.0.0-rc2
+          tag: 1.0.0-rc3
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
