@@ -425,7 +425,7 @@ steps:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
-          tag: 1.0.0-rc2
+          tag: 1.0.0-rc3
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
@@ -444,7 +444,7 @@ steps:
       releaseName: oasgen-provider
       repo: oasgen-provider
       url: https://charts.krateo.io
-      version: 0.9.0
+      version: 0.11.0
       values:
         image:
           repository: ghcr.io/krateoplatformops/oasgen-provider
