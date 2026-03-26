@@ -284,7 +284,7 @@ steps:
       releaseName: events-ingester
       repo: events-ingester
       url: https://charts.krateo.io
-      version: 0.3.0
+      version: 0.4.0
       values:        
         config:
           DEBUG: "true"
