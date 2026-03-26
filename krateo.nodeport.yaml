@@ -372,7 +372,7 @@ steps:
       releaseName: core-provider
       repo: core-provider
       url: https://charts.krateo.io
-      version: 1.0.0-rc1
+      version: 1.0.0-rc2
       values:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
