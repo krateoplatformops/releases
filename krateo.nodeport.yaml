@@ -396,7 +396,7 @@ steps:
       releaseName: oasgen-provider
       repo: oasgen-provider
       url: https://charts.krateo.io
-      version: 0.11.0
+      version: 0.11.1
       values:
         image:
           repository: ghcr.io/krateoplatformops/oasgen-provider
