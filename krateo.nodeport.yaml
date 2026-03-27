@@ -220,6 +220,8 @@ steps:
       repo: deviser
       url: https://charts.krateo.io
       version: 0.5.0
+      wait: true
+      timeout: 15m
       values:
         config:
           DEBUG: "true"
@@ -243,7 +245,7 @@ steps:
       releaseName: resources-ingester
       repo: resources-ingester
       url: https://charts.krateo.io
-      version: 1.0.2
+      version: 1.0.3
       values:
         config:
           DEBUG: "true"
@@ -303,7 +305,7 @@ steps:
       releaseName: events-presenter
       repo: events-presenter
       url: https://charts.krateo.io
-      version: 0.5.0
+      version: 0.6.0
       values:
         service:
           type: NodePort
