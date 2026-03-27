@@ -26,12 +26,19 @@
 # ============================================================================
 
 components:
+
+
   # Example: Customize authentication service
   # - enabled:      toggle the whole component on/off
   # - helmDefaults: defaults applied to ALL chart steps of this component
   # - stepConfig:   per-step overrides keyed by step id (only for chart steps)
   backend:
     stepConfig:
+      install-snowplow:
+        with:
+          values:
+            env:
+              DEBUG: "true"  # only applies to install-snowplow step
       install-authn:
         with:
           values:
