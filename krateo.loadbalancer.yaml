@@ -336,7 +336,7 @@ steps:
       releaseName: events-presenter
       repo: events-presenter
       url: https://charts.krateo.io
-      version: 0.5.0
+      version: 0.6.0
       values:
         service:
           type: LoadBalancer
