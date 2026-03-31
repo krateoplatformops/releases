@@ -27,5 +27,8 @@ For more information, see the [krateoctl documentation](https://github.com/krate
 
 - **Initial platform deployment** - Fresh installation to a new cluster
 - **Version upgrades** - Rolling out platform updates with validated configurations
+  - Pre-upgrade cleanup of deprecated components (see `pre-upgrade.yaml` for the automated cleanup job)
+  - Removal of obsolete services with their persistent data (e.g., etcd volumes for sunset components)
+  - Safe re-installation of components with new versions in correct dependency order
 - **Multi-environment consistency** - Deploy identical platform functionality across dev, staging, and production
-- **Configuration validation** - Pre-deployment configuration verification before applying to the cluster
+- **Configuration validation** - Pre-deployment configuration validation before applying to the cluster
