@@ -1,5 +1,8 @@
 # Krateo Platform Release Configurations
 
+> [!IMPORTANT]
+> This repository is intended **exclusively for use with `krateoctl`**. These configuration files are not meant to be used directly with `kubectl` or other deployment tools. Always use the `krateoctl` CLI to install and manage Krateo platform deployments.
+
 ## Purpose
 
 This repository contains standardized Krateo platform deployment configurations for different infrastructure scenarios. These manifests define the complete installation blueprint for the Krateo platform, including all core components (authentication, event management, analytics, and cost optimization services).
