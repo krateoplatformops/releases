@@ -273,6 +273,7 @@ steps:
           DB_HOST: pg-cluster-ro.{{ .Namespace }}.svc.cluster.local
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
+          AUTHN_NS: "{{ .Namespace }}"
 
         dbSecret:
           name: krateo-db
