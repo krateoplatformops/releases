@@ -54,10 +54,6 @@ components:
             env:
               FRONTEND_DEBUG: "true"  # only applies to install-frontend step
 
-  # Example: enable optional FinOps module in prod, disable in dev
-  finops:
-    enabled: false
-
   # Example: For development - override core-provider with local chart
   composable-operations:
     stepConfig:
