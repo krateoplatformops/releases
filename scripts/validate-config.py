@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Validate configuration consistency across krateo*.yaml files
-This script is part of the krateoctl ecosystem for managing Krateo platform releases.
+Validate configuration consistency across krateo*.yaml files.
+This script is used in the release configuration validation pipeline (CI/CD).
 
 Checks: chart versions, chart repos/URLs, release names, and ALL image tags
 Requires: PyYAML (installed via: pip install pyyaml)
