@@ -309,7 +309,7 @@ steps:
       releaseName: events-presenter
       repo: events-presenter
       url: https://charts.krateo.io
-      version: 0.6.4
+      version: 0.6.6
       values:
         service:
           type: NodePort
