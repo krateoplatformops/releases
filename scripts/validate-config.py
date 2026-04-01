@@ -76,7 +76,16 @@ def extract_all_tags(values_dict, step_id):
 for file_path in krateo_files:
     try:
         with open(file_path, 'r') as f:
-            data = yaml.safe_load(f)
+            content = f.read()
+        
+        # Pre-process to handle unquoted template variables ({{ .Variable }})
+        # Replace unquoted template vars with quoted ones for YAML parsing
+        import re
+        # Match pattern: namespace: {{ .Namespace }} or similar
+        # Only quote if not already quoted
+        content = re.sub(r':\s+(?=[^"\'])(\{\{[^}]+\}\})', r': "\1"', content)
+        
+        data = yaml.safe_load(content)
         
         if not data or "steps" not in data:
             continue

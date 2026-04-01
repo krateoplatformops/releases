@@ -219,7 +219,7 @@ steps:
           DEBUG: "true"
           PORT: "8081"
 
-          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_HOST: pg-cluster-rw.{{ .Namespace }}.svc.cluster.local
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
 
@@ -242,7 +242,7 @@ steps:
           DEBUG: "true"
           PORT: "8084"
 
-          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_HOST: pg-cluster-rw.{{ .Namespace }}.svc.cluster.local
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
 
@@ -272,9 +272,10 @@ steps:
           DEBUG: "true"
           PORT: "8085"
 
-          DB_HOST: pg-cluster-ro.krateo-system.svc.cluster.local
+          DB_HOST: pg-cluster-ro.{{ .Namespace }}.svc.cluster.local
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
+          AUTHN_NS: "{{ .Namespace }}"
 
         dbSecret:
           name: krateo-db
@@ -295,7 +296,7 @@ steps:
           DEBUG: "true"
           PORT: "8082"
 
-          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_HOST: pg-cluster-rw.{{ .Namespace }}.svc.cluster.local
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
         
@@ -326,7 +327,7 @@ steps:
           DEBUG: "true"
           PORT: "8083"
 
-          DB_HOST: pg-cluster-rw.krateo-system.svc.cluster.local
+          DB_HOST: pg-cluster-rw.{{ .Namespace }}.svc.cluster.local
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
 
@@ -360,8 +361,8 @@ steps:
           SNOWPLOW_API_BASE_URL: http://snowplow.krateoplatformops.io
           EVENTS_API_BASE_URL: http://events-presenter.krateoplatformops.io
           EVENTS_PUSH_API_BASE_URL: http://events-presenter.krateoplatformops.io
-          INIT: /call?resource=navmenus&apiVersion=widgets.templates.krateo.io/v1beta1&name=sidebar-nav-menu&namespace=krateo-system
-          ROUTES_LOADER: /call?resource=routesloaders&apiVersion=widgets.templates.krateo.io/v1beta1&name=routes-loader&namespace=krateo-system
+          INIT: /call?resource=navmenus&apiVersion=widgets.templates.krateo.io/v1beta1&name=sidebar-nav-menu&namespace={{ .Namespace }}
+          ROUTES_LOADER: /call?resource=routesloaders&apiVersion=widgets.templates.krateo.io/v1beta1&name=routes-loader&namespace={{ .Namespace }}
 
   # Portal starter
   - id: install-portal
@@ -487,7 +488,7 @@ steps:
                 - path: /
                   pathType: Prefix
         env:
-          CRATE_HOST: cratedb.krateo-system.svc.cluster.local
+          CRATE_HOST: cratedb.{{ .Namespace }}.svc.cluster.local
           cratedbUserSystemName: cratedb-system-credentials
   
   # Extract finops database handler port
@@ -500,7 +501,7 @@ steps:
         kind: Service
         metadata:
           name: finops-database-handler
-          namespace: krateo-system
+          namespace: {{ .Namespace }}
         selector: .spec.ports[0].port
 
   # FinOps database uploader
@@ -517,8 +518,8 @@ steps:
           pullPolicy: IfNotPresent
         env:
           FINOPS_DATABASE_HANDLER_ENDPOINT_NAME: finops-database-handler-endpoint
-          FINOPS_DATABASE_HANDLER_ENDPOINT_NAMESPACE: krateo-system
-          DATABASE_CONFIG_NAMESPACE: krateo-system
+          FINOPS_DATABASE_HANDLER_ENDPOINT_NAMESPACE: {{ .Namespace }}
+          DATABASE_CONFIG_NAMESPACE: {{ .Namespace }}
 
   # FinOps notebooks
   - id: install-finops-notebooks
@@ -542,7 +543,7 @@ steps:
           repository: ghcr.io/krateoplatformops/finops-operator-scraper
           pullPolicy: IfNotPresent
         env:
-          URL_DB_WEBSERVICE: http://finops-database-handler.krateo-system.svc.cluster.local:${FINOPS_DATABASE_HANDLER_INTERNAL_PORT}
+          URL_DB_WEBSERVICE: http://finops-database-handler.{{ .Namespace }}.svc.cluster.local:${FINOPS_DATABASE_HANDLER_INTERNAL_PORT}
 
   # Policy Engine
   - id: install-opa
