@@ -1,4 +1,4 @@
-# Krateo Platform Release Configurations
+# Krateo Release Configurations
 
 > [!IMPORTANT]
 > This repository is intended **exclusively for use with `krateoctl`**. These configuration files are not meant to be used directly with `kubectl` or other deployment tools. Always use the `krateoctl` CLI to install and manage Krateo platform deployments.
