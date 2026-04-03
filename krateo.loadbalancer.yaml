@@ -91,6 +91,8 @@ steps:
       repo: authn
       url: https://charts.krateo.io
       version: 0.22.2
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/authn
@@ -133,6 +135,8 @@ steps:
       repo: snowplow
       url: https://charts.krateo.io
       version: 0.20.6
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/snowplow
@@ -293,10 +297,12 @@ steps:
       repo: resources-presenter
       url: https://charts.krateo.io
       version: 0.9.0
-      service:
-        type: LoadBalancer
-        port: 8083
+      wait: true
+      timeout: 15m
       values:
+        service:
+          type: LoadBalancer
+          port: 8083
         config:
           DEBUG: "true"
           PORT: "8085"
@@ -339,6 +345,8 @@ steps:
       repo: events-presenter
       url: https://charts.krateo.io
       version: 0.6.7
+      wait: true
+      timeout: 15m
       values:
         service:
           type: LoadBalancer
@@ -429,7 +437,7 @@ steps:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc3
+            tag: 1.0.0-rc4
         chartInspector:
           image:
             repository: ghcr.io/krateoplatformops/chart-inspector
@@ -511,6 +519,8 @@ steps:
       repo: finops-database-handler
       url: https://charts.krateo.io
       version: 0.5.3
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/finops-database-handler
