@@ -390,7 +390,7 @@ steps:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc3
+            tag: 1.0.0-rc4
         chartInspector:
           image:
             repository: ghcr.io/krateoplatformops/chart-inspector
