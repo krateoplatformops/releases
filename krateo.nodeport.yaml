@@ -87,6 +87,8 @@ steps:
       repo: authn
       url: https://charts.krateo.io
       version: 0.22.2
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/authn
@@ -96,6 +98,7 @@ steps:
           nodePort: 30082
         env:
           AUTHN_KUBECONFIG_SERVER_URL: null
+      
 
   # Extract authn service port for downstream use
   - id: extract-authn-port
@@ -117,6 +120,8 @@ steps:
       repo: snowplow
       url: https://charts.krateo.io
       version: 0.20.6
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/snowplow
@@ -265,6 +270,8 @@ steps:
       repo: resources-presenter
       url: https://charts.krateo.io
       version: 0.9.0
+      wait: true
+      timeout: 15m
       values:
         config:
           DEBUG: "true"
@@ -307,6 +314,8 @@ steps:
       repo: events-presenter
       url: https://charts.krateo.io
       version: 0.6.7
+      wait: true
+      timeout: 15m
       values:
         service:
           type: NodePort
@@ -467,6 +476,8 @@ steps:
       repo: finops-database-handler
       url: https://charts.krateo.io
       version: 0.5.3
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/finops-database-handler
