@@ -45,6 +45,40 @@ components:
             env:
               AUTHN_DEBUG: "true"  # only applies to install-authn step
 
+  db-maintenance:
+    stepConfig:
+      install-deviser:
+        with:
+          values:
+            config:
+              DEBUG: "true"
+
+  resources-stack:
+    stepConfig:
+      install-resources-ingester:
+        with:
+          values:
+            config:
+              DEBUG: "true"
+      install-resources-presenter:
+        with:
+          values:
+            config:
+              DEBUG: "true"
+
+  events-stack:
+    stepConfig:
+      install-events-ingester:
+        with:
+          values:
+            config:
+              DEBUG: "true"
+      install-events-presenter:
+        with:
+          values:
+            config:
+              DEBUG: "true"
+
   # Example: Customize frontend single chart step via stepConfig
   frontend:
     stepConfig:
