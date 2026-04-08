@@ -21,7 +21,7 @@ If you copy them into another GitOps repo, change:
 
 Default install type in these examples:
 
-- `loadbalancer`
+- `nodeport`
 
 Supported install types:
 
