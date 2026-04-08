@@ -89,6 +89,7 @@ steps:
     type: chart
     with:
       repo: authn
+      releaseName: authn
       url: https://charts.krateo.io
       version: 0.22.2
       wait: true
@@ -132,6 +133,7 @@ steps:
   - id: install-snowplow
     type: chart
     with:
+      releaseName: snowplow
       repo: snowplow
       url: https://charts.krateo.io
       version: 0.20.6

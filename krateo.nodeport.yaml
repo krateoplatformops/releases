@@ -85,6 +85,7 @@ steps:
     type: chart
     with:
       repo: authn
+      releaseName: authn
       url: https://charts.krateo.io
       version: 0.22.2
       wait: true
@@ -118,6 +119,7 @@ steps:
     type: chart
     with:
       repo: snowplow
+      releaseName: snowplow
       url: https://charts.krateo.io
       version: 0.20.6
       wait: true
