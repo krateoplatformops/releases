@@ -1,15 +1,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: krateoctl-install-__INSTALL_TYPE__
+  name: krateoctl-install-loadbalancer
   namespace: flux-system
 spec:
   interval: 5m
   wait: true
   prune: true
   timeout: 10m
+  force: true
   sourceRef:
     kind: GitRepository
     name: krateo-gitops
-  path: __GITOPS_PATH__
+  path: ./argocd/jobs/loadbalancer
   targetNamespace: krateo-system

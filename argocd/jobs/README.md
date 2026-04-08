@@ -11,7 +11,7 @@ This folder contains reusable Kubernetes Job assets intended for the GitOps repo
 
 ## How to use it
 
-Each manifest contains both the `ConfigMap` and the `Job`, so it can be applied without Kustomize.
+Each manifest is a plain Kubernetes `Job`, so it can be applied without Kustomize.
 
 If you are using Argo CD, point the Application at one of:
 
@@ -19,15 +19,8 @@ If you are using Argo CD, point the Application at one of:
 - `argocd/jobs/loadbalancer/job.yaml`
 - `argocd/jobs/ingress/job.yaml`
 
-Required keys:
-
-- `KRATEOCTL_VERSION`
-- `KRATEOCTL_REPOSITORY`
-- `KRATEOCTL_NAMESPACE`
-- `KRATEOCTL_TYPE`
-
 The Job exits with a non-zero code if `krateoctl install apply` fails, so Kubernetes and Argo CD can surface the failure immediately.
-The resource names include the release tag placeholder, so when the GitOps repo updates to a new release the Job is recreated rather than patched in place.
+The release version is embedded in the Job command, so when the GitOps repo updates to a new release the Job template changes and the controller can recreate it cleanly.
 
 If you want controller-level examples for the GitOps repository, see [`gitops-examples/`](../../gitops-examples/README.md).
 
@@ -35,4 +28,4 @@ If you want controller-level examples for the GitOps repository, see [`gitops-ex
 
 - RBAC is intentionally not defined here. It belongs in the GitOps repository, as requested.
 - The release repository stays focused on versioned installation assets consumed by `krateoctl`.
-- Replace `__SET_RELEASE_TAG__` with the actual release tag in the GitOps repository.
+- If you need a different release version, update the version string in the Job command and keep the GitOps controller set to recreate immutable Jobs.

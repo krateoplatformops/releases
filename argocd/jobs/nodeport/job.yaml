@@ -1,24 +1,10 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: krateoctl-install-config-__SET_RELEASE_TAG__
-  labels:
-    app.kubernetes.io/name: krateoctl-install
-    app.kubernetes.io/version: __SET_RELEASE_TAG__
-    krateo.io/install-type: nodeport
-data:
-  KRATEOCTL_VERSION: "__SET_RELEASE_TAG__"
-  KRATEOCTL_REPOSITORY: "https://github.com/krateoplatformops/releases"
-  KRATEOCTL_NAMESPACE: "krateo-system"
-  KRATEOCTL_TYPE: "nodeport"
----
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: krateoctl-install-__SET_RELEASE_TAG__-nodeport
+  name: krateoctl-install-nodeport
   labels:
     app.kubernetes.io/name: krateoctl-install
-    app.kubernetes.io/version: __SET_RELEASE_TAG__
+    app.kubernetes.io/version: argo-job-testing
     krateo.io/install-type: nodeport
 spec:
   ttlSecondsAfterFinished: 300
@@ -27,7 +13,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: krateoctl-install
-        app.kubernetes.io/version: __SET_RELEASE_TAG__
+        app.kubernetes.io/version: argo-job-testing
         krateo.io/install-type: nodeport
     spec:
       serviceAccountName: krateoctl-install
@@ -36,20 +22,12 @@ spec:
         - name: krateoctl
           image: ghcr.io/krateoplatformops/krateoctl:latest
           imagePullPolicy: IfNotPresent
-          envFrom:
-            - configMapRef:
-                name: krateoctl-install-config-__SET_RELEASE_TAG__
           command:
             - /bin/sh
             - -ec
             - |
-              : "${KRATEOCTL_VERSION:?missing KRATEOCTL_VERSION}"
-              : "${KRATEOCTL_REPOSITORY:?missing KRATEOCTL_REPOSITORY}"
-              : "${KRATEOCTL_NAMESPACE:?missing KRATEOCTL_NAMESPACE}"
-              : "${KRATEOCTL_TYPE:?missing KRATEOCTL_TYPE}"
-
               exec krateoctl install apply \
-                --version "${KRATEOCTL_VERSION}" \
-                --repository "${KRATEOCTL_REPOSITORY}" \
-                --namespace "${KRATEOCTL_NAMESPACE}" \
-                --type "${KRATEOCTL_TYPE}"
+                --version "argo-job-testing" \
+                --repository "https://github.com/krateoplatformops/releases" \
+                --namespace "krateo-system" \
+                --type "nodeport"
