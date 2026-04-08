@@ -48,7 +48,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: KUBECONFIG
-              value: /kubeconfig/config
+              value: kubeconfig/config
           args:
             - install
             - apply
@@ -62,7 +62,7 @@ spec:
             - "loadbalancer"
           volumeMounts:
             - name: kubeconfig
-              mountPath: /kubeconfig
+              mountPath: /root/kubeconfig
               readOnly: true
       volumes:
         - name: kubeconfig
