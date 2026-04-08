@@ -28,6 +28,7 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 300
   backoffLimit: 0
+  manualSelector: true
   selector:
     matchLabels:
       app.kubernetes.io/name: krateoctl-install

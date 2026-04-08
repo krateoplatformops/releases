@@ -30,7 +30,7 @@ For more information, see the [krateoctl documentation](https://github.com/krate
 
 The `argocd/jobs/` folder contains plain Kubernetes manifests for the GitOps repository that launches `krateoctl` inside the cluster.
 
-Each manifest includes both the `ConfigMap` and the `Job`, and the release tag placeholder is embedded in the resource names. That means updating the release version in GitOps naturally recreates the Job instead of patching an immutable one.
+Each manifest is a plain Kubernetes `Job` that uses the official `krateoctl` container image directly and then runs `krateoctl install apply`. The Job mounts a `krateoctl-kubeconfig` Secret, so the GitOps repo must create that Secret in the target namespace. Updating the release version in GitOps changes the Job template and lets the controller recreate it instead of patching an immutable object.
 
 Supported install types:
 
@@ -38,7 +38,7 @@ Supported install types:
 - `loadbalancer`
 - `ingress`
 
-This keeps the release repository focused on versioned installation assets while leaving the Job and RBAC wiring to GitOps.
+This keeps the release repository focused on versioned installation assets while leaving the Job recreation policy and RBAC wiring to GitOps.
 
 If you need controller manifests to paste into the GitOps repository, see [`gitops-examples/`](./gitops-examples/README.md).
 
