@@ -400,7 +400,7 @@ steps:
           image:
             repository: ghcr.io/krateoplatformops/chart-inspector
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc1
+            tag: 1.0.0-rc2
 
   # OAS provider for operator generation from OpenAPI specs
   - id: install-oasgen-provider
