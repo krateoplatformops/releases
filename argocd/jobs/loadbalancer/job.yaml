@@ -1,3 +1,22 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: krateoctl-install
+  namespace: krateo-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: krateoctl-install
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: krateoctl-install
+    namespace: krateo-system
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -9,6 +28,10 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 300
   backoffLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: krateoctl-install
+      krateo.io/install-type: loadbalancer
   template:
     metadata:
       labels:
@@ -22,6 +45,9 @@ spec:
         - name: krateoctl
           image: ghcr.io/krateoplatformops/krateoctl:latest
           imagePullPolicy: IfNotPresent
+          env:
+            - name: KUBECONFIG
+              value: /kubeconfig/config
           args:
             - install
             - apply
@@ -33,3 +59,14 @@ spec:
             - "krateo-system"
             - --type
             - "loadbalancer"
+          volumeMounts:
+            - name: kubeconfig
+              mountPath: /kubeconfig
+              readOnly: true
+      volumes:
+        - name: kubeconfig
+          secret:
+            secretName: krateoctl-kubeconfig
+            items:
+              - key: config
+                path: config
