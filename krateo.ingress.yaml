@@ -86,6 +86,8 @@ steps:
       repo: authn
       url: https://charts.krateo.io
       version: 0.22.2
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/authn
@@ -112,6 +114,8 @@ steps:
       repo: snowplow
       url: https://charts.krateo.io
       version: 0.20.6
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/snowplow
@@ -256,6 +260,8 @@ steps:
       repo: resources-presenter
       url: https://charts.krateo.io
       version: 0.10.3
+      wait: true
+      timeout: 15m
       values:
         service:
           type: NodePort
@@ -311,6 +317,8 @@ steps:
       repo: events-presenter
       url: https://charts.krateo.io
       version: 0.7.0
+      wait: true
+      timeout: 15m
       values:
         service:
           type: NodePort
@@ -343,7 +351,7 @@ steps:
       url: https://charts.krateo.io
       version: 1.0.16
       wait: true
-      timeout: 5m
+      timeout: 15m
       values:
         service:
           type: NodePort
@@ -371,7 +379,7 @@ steps:
       releaseName: portal
       repo: portal
       url: https://marketplace.krateo.io
-      version: 1.3.3
+      version: 1.3.4
 
   # Core composition engine
   - id: install-core-provider
@@ -390,12 +398,12 @@ steps:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc3
+            tag: 1.0.0-rc4
         chartInspector:
           image:
             repository: ghcr.io/krateoplatformops/chart-inspector
             pullPolicy: IfNotPresent
-            tag: 0.2.0 #Bug nella 1.0.0-rc1 di chart-inspector da risolvere
+            tag: 1.0.0-rc2
 
   # OAS provider for operator generation from OpenAPI specs
   - id: install-oasgen-provider
@@ -443,7 +451,7 @@ steps:
       url: https://charts.krateo.io
       version: 0.5.2
       wait: true
-      timeout: 5m
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/finops-operator-exporter
@@ -472,6 +480,8 @@ steps:
       repo: finops-database-handler
       url: https://charts.krateo.io
       version: 0.5.3
+      wait: true
+      timeout: 15m
       values:
         image:
           repository: ghcr.io/krateoplatformops/finops-database-handler
