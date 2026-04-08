@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: krateoctl-install-__INSTALL_TYPE__
+  name: krateoctl-install-loadbalancer
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: __GITOPS_REPO_URL__
-    targetRevision: main
-    path: __GITOPS_PATH__
+    repoURL: https://github.com/krateoplatformops/releases.git
+    targetRevision: argo-job-testing
+    path: argocd/jobs/loadbalancer
   destination:
     server: https://kubernetes.default.svc
     namespace: krateo-system
@@ -19,3 +19,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true
+      - Replace=true
