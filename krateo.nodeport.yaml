@@ -366,12 +366,13 @@ steps:
           type: NodePort
           nodePort: 30080
         config:
-          AUTHN_API_BASE_URL: http://127.0.0.1:${AUTHN_PORT}
-          SNOWPLOW_API_BASE_URL: http://127.0.0.1:${SNOWPLOW_PORT}
-          EVENTS_PUSH_API_BASE_URL: http://127.0.0.1:${EVENTS_PRESENTER_PORT}
-          EVENTS_API_BASE_URL: http://127.0.0.1:${EVENTS_PRESENTER_PORT}
+          AUTHN_API_BASE_URL: http://authn.{{ .Namespace }}.svc.cluster.local:8080
+          SNOWPLOW_API_BASE_URL: http://snowplow.{{ .Namespace }}.svc.cluster.local:8080
+          EVENTS_PUSH_API_BASE_URL: http://events-presenter.{{ .Namespace }}.svc.cluster.local:8083
+          EVENTS_API_BASE_URL: http://events-presenter.{{ .Namespace }}.svc.cluster.local:8083
           INIT: /call?resource=navmenus&apiVersion=widgets.templates.krateo.io/v1beta1&name=sidebar-nav-menu&namespace={{ .Namespace }}
           ROUTES_LOADER: /call?resource=routesloaders&apiVersion=widgets.templates.krateo.io/v1beta1&name=routes-loader&namespace={{ .Namespace }}
+
 
   # Portal starter
   - id: install-portal

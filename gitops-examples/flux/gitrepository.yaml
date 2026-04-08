@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: krateo-gitops
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: __GITOPS_REPO_URL__
+  ref:
+    branch: main
