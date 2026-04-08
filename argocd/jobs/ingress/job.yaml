@@ -22,12 +22,14 @@ spec:
         - name: krateoctl
           image: ghcr.io/krateoplatformops/krateoctl:latest
           imagePullPolicy: IfNotPresent
-          command:
-            - /bin/sh
-            - -ec
-            - |
-              exec krateoctl install apply \
-                --version "argo-job-testing" \
-                --repository "https://github.com/krateoplatformops/releases" \
-                --namespace "krateo-system" \
-                --type "ingress"
+          args:
+            - install
+            - apply
+            - --version
+            - "argo-job-testing"
+            - --repository
+            - "https://github.com/krateoplatformops/releases"
+            - --namespace
+            - "krateo-system"
+            - --type
+            - "ingress"
