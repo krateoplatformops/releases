@@ -13,7 +13,7 @@ This folder contains reusable Kubernetes Job assets intended for the GitOps repo
 
 Each manifest is a plain Kubernetes `Job`, so it can be applied without Kustomize.
 At runtime the Job uses the official `krateoctl` container image directly and runs `krateoctl install apply`.
-The Job expects a mounted Secret named `krateoctl-kubeconfig` with a `config` key available at `/kubeconfig/config`.
+The Job expects a mounted Secret named `krateoctl-kubeconfig` with a `config` key available at `/root/kubeconfig/config`.
 
 If you are using Argo CD, point the Application at one of:
 
