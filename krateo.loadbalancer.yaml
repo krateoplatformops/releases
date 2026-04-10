@@ -265,10 +265,13 @@ steps:
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
 
+          # PM: Partition Manager
+          # The following variables are related to `k8s_events` table partition management.
+          # Adjust them based on your event volume and retention needs.
           PM_MAX_PARTITIONS_SIZE: "1073741824" # 1GB
           PM_TRIGGER_RATIO: "0.75"
           PM_TARGET_RATIO: "0.60"
-          PM_RETENTION_DAYS: "2"
+          PM_RETENTION_DAYS: "7"
         
         secret:
           name: krateo-db
