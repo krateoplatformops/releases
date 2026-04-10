@@ -1,0 +1,13 @@
+# This profile disables the `cnpg` component (`install-cnpg` and `install-pg-cluster` steps)
+# It can be used in those cases where an exiting in-cluster or remote PostgreSQL database 
+# is used instead of the one shipped with standard Krateo installation.
+# Note: you still need to provide, with a config file for krateoctl, the correct database credentials and connection details to the following components:
+# - deviser
+# - resources-ingester
+# - resources-presenter
+# - events-ingester
+# - events-presenter
+
+components:
+  cnpg:
+    enabled: false

@@ -253,7 +253,7 @@ steps:
       releaseName: deviser
       repo: deviser
       url: https://charts.krateo.io
-      version: 0.5.0
+      version: 0.5.1
       wait: true
       timeout: 15m
       values:
@@ -265,10 +265,13 @@ steps:
           DB_NAME: krateo-db
           DB_READY_TIMEOUT: "5m"
 
+          # PM: Partition Manager
+          # The following variables are related to `k8s_events` table partition management.
+          # Adjust them based on your event volume and retention needs.
           PM_MAX_PARTITIONS_SIZE: "1073741824" # 1GB
           PM_TRIGGER_RATIO: "0.75"
           PM_TARGET_RATIO: "0.60"
-          PM_RETENTION_DAYS: "2"
+          PM_RETENTION_DAYS: "7"
         
         secret:
           name: krateo-db
@@ -327,7 +330,7 @@ steps:
       releaseName: events-ingester
       repo: events-ingester
       url: https://charts.krateo.io
-      version: 0.4.0
+      version: 0.4.1
       values:        
         config:
           DEBUG: "false"
@@ -346,7 +349,7 @@ steps:
       releaseName: events-presenter
       repo: events-presenter
       url: https://charts.krateo.io
-      version: 0.7.0
+      version: 0.7.4
       wait: true
       timeout: 15m
       values:
