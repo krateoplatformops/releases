@@ -432,22 +432,22 @@ steps:
       releaseName: core-provider
       repo: core-provider
       url: https://charts.krateo.io
-      version: 1.0.0-rc2
+      version: 1.0.0-rc3
       values:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
           pullPolicy: IfNotPresent
-          tag: 1.0.0-rc4
+          tag: 1.0.0-rc5
         cdc:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc4
+            tag: 1.0.0-rc5
         chartInspector:
           image:
             repository: ghcr.io/krateoplatformops/chart-inspector
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc2
+            tag: 1.0.0-rc3
 
   # OAS provider for operator generation from OpenAPI specs
   - id: install-oasgen-provider
