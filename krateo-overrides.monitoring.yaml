@@ -10,6 +10,13 @@ components:
               OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318"
   resources-stack:
     stepConfig:
+      install-resources-ingester:
+        with:
+          values:
+            config:
+              OTEL_ENABLED: "true"
+              OTEL_EXPORT_INTERVAL: "30s"
+              OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318"
       install-resources-presenter:
         with:
           values:
