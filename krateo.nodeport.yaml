@@ -490,9 +490,9 @@ steps:
         service:
           type: NodePort
           nodePort: 30086
+        cratedbUserSystemName: cratedb-system-credentials
         env:
           CRATE_HOST: cratedb.{{ .Namespace }}.svc.cluster.local
-          cratedbUserSystemName: cratedb-system-credentials
 
   # Extract finops database handler port
   - id: extract-finops-database-handler-port
