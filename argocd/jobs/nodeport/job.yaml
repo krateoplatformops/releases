@@ -23,7 +23,6 @@ metadata:
   name: krateoctl-install-nodeport
   labels:
     app.kubernetes.io/name: krateoctl-install
-    app.kubernetes.io/version: RELEASE_VERSION
     krateo.io/install-type: nodeport
 spec:
   ttlSecondsAfterFinished: 300
@@ -37,7 +36,6 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: krateoctl-install
-        app.kubernetes.io/version: RELEASE_VERSION
         krateo.io/install-type: nodeport
     spec:
       serviceAccountName: krateoctl-install
@@ -53,7 +51,7 @@ spec:
             - install
             - apply
             - --version
-            - "RELEASE_VERSION"
+            - "3.0.0-rc99-test"
             - --repository
             - "https://github.com/krateoplatformops/releases"
             - --namespace
