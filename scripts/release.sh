@@ -16,23 +16,14 @@ if [[ ! "$VERSION" =~ $SEMVER_RE ]]; then
   exit 1
 fi
 
-echo "→ Substituting RELEASE_VERSION with ${VERSION}..."
-sed -i "s/RELEASE_VERSION/${VERSION}/g" \
-  argocd/jobs/ingress/job.yaml \
-  argocd/jobs/loadbalancer/job.yaml \
-  argocd/jobs/nodeport/job.yaml
-
-echo "→ Committing..."
-git add argocd/jobs/ingress/job.yaml \
-        argocd/jobs/loadbalancer/job.yaml \
-        argocd/jobs/nodeport/job.yaml
-git commit -m "release: ${VERSION}"
-
-echo "→ Tagging ${VERSION}..."
-git tag "${VERSION}"
-
-echo "→ Pushing..."
-git push origin main "${VERSION}"
-
-echo ""
-echo "✓ Released ${VERSION}"
+echo "→ Updating version to ${VERSION} in job manifests..."
+for f in argocd/jobs/ingress/job.yaml \
+         argocd/jobs/loadbalancer/job.yaml \
+         argocd/jobs/nodeport/job.yaml; do
+  # Update version labels
+  sed -i.bak "s/app.kubernetes.io\/version:.*/app.kubernetes.io\/version: ${VERSION}/" "$f"
+  # Update --version arg (the line immediately after "- --version")
+  sed -i.bak '/- --version/{n; s/.*/            - "'"${VERSION}"'"/;}' "$f"
+  # Clean up the backup file
+  rm -f "${f}.bak"
+done

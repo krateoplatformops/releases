@@ -20,20 +20,32 @@ if ! act push \
   exit 1
 fi
 
-# ── 2. Block tag push if RELEASE_VERSION is unresolved ───────────────────────
+# ── 2. Check all 3 jobs have the same version (on any push) ──────────────────
+v_ingress=$(grep -A1 '^\s*- --version$' argocd/jobs/ingress/job.yaml | tail -1 | tr -d '[:space:]"')
+v_loadb=$(grep -A1 '^\s*- --version$' argocd/jobs/loadbalancer/job.yaml | tail -1 | tr -d '[:space:]"')
+v_nodeport=$(grep -A1 '^\s*- --version$' argocd/jobs/nodeport/job.yaml | tail -1 | tr -d '[:space:]"')
+
+if [[ "$v_ingress" != "$v_loadb" || "$v_loadb" != "$v_nodeport" ]]; then
+  echo ""
+  echo "✗ Push blocked: --version mismatches between job manifests."
+  echo "  ingress:      $v_ingress"
+  echo "  loadbalancer: $v_loadb"
+  echo "  nodeport:     $v_nodeport"
+  echo ""
+  exit 1
+fi
+
+# ── 3. Check tag matches --version in job manifests ──────────────────────────
 SEMVER_RE='^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)*$'
 
 while read local_ref local_sha remote_ref remote_sha; do
   if [[ "$local_ref" == refs/tags/* ]]; then
     tag="${local_ref#refs/tags/}"
     if [[ "$tag" =~ $SEMVER_RE ]]; then
-      if grep -rq "RELEASE_VERSION" \
-          argocd/jobs/ingress/job.yaml \
-          argocd/jobs/loadbalancer/job.yaml \
-          argocd/jobs/nodeport/job.yaml; then
+      if [[ "$tag" != "$v_ingress" ]]; then
         echo ""
-        echo "✗ Push blocked: RELEASE_VERSION placeholder is still present in argocd/jobs/."
-        echo "  Run ./scripts/release.sh <version> to resolve it before pushing the tag."
+        echo "✗ Push blocked: tag '${tag}' does not match --version '${v_ingress}' in job manifests."
+        echo "  Run ./scripts/release.sh ${tag} to update the job manifests first."
         echo ""
         exit 1
       fi
