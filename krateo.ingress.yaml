@@ -352,7 +352,7 @@ steps:
       releaseName: frontend
       repo: frontend
       url: https://charts.krateo.io
-      version: 1.0.18
+      version: 1.0.19
       wait: true
       timeout: 15m
       values:
