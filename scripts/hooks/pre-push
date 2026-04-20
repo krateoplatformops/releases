@@ -21,9 +21,9 @@ if ! act push \
 fi
 
 # ── 2. Check all 3 jobs have the same version (on any push) ──────────────────
-v_ingress=$(grep -A1 '^\s*- --version$' argocd/jobs/ingress/job.yaml | tail -1 | tr -d '[:space:]"')
-v_loadb=$(grep -A1 '^\s*- --version$' argocd/jobs/loadbalancer/job.yaml | tail -1 | tr -d '[:space:]"')
-v_nodeport=$(grep -A1 '^\s*- --version$' argocd/jobs/nodeport/job.yaml | tail -1 | tr -d '[:space:]"')
+v_ingress=$(awk '/- --version/{getline; print $2}' argocd/jobs/ingress/job.yaml | tr -d '"')
+v_loadb=$(awk '/- --version/{getline; print $2}' argocd/jobs/loadbalancer/job.yaml | tr -d '"')
+v_nodeport=$(awk '/- --version/{getline; print $2}' argocd/jobs/nodeport/job.yaml | tr -d '"')
 
 if [[ "$v_ingress" != "$v_loadb" || "$v_loadb" != "$v_nodeport" ]]; then
   echo ""
