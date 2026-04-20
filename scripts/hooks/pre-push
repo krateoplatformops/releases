@@ -1,0 +1,44 @@
+#!/bin/bash
+# pre-push hook — runs before every push.
+# Install: git config core.hooksPath scripts/hooks
+
+# ── 1. Validate krateo*.yaml consistency (via act) ───────────────────────────
+if ! command -v act &>/dev/null; then
+  echo "✗ Push blocked: 'act' is not installed."
+  echo "  Install it from https://github.com/nektos/act"
+  exit 1
+fi
+
+echo "→ Running validate-krateo-versions workflow via act..."
+if ! act push \
+     -j validate-versions \
+     -W .github/workflows/validate-krateo-versions.yml; then
+  echo ""
+  echo "✗ Push blocked: validation workflow failed."
+  echo "  Fix the errors above and try again."
+  echo ""
+  exit 1
+fi
+
+# ── 2. Block tag push if RELEASE_VERSION is unresolved ───────────────────────
+SEMVER_RE='^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)*$'
+
+while read local_ref local_sha remote_ref remote_sha; do
+  if [[ "$local_ref" == refs/tags/* ]]; then
+    tag="${local_ref#refs/tags/}"
+    if [[ "$tag" =~ $SEMVER_RE ]]; then
+      if grep -rq "RELEASE_VERSION" \
+          argocd/jobs/ingress/job.yaml \
+          argocd/jobs/loadbalancer/job.yaml \
+          argocd/jobs/nodeport/job.yaml; then
+        echo ""
+        echo "✗ Push blocked: RELEASE_VERSION placeholder is still present in argocd/jobs/."
+        echo "  Run ./scripts/release.sh <version> to resolve it before pushing the tag."
+        echo ""
+        exit 1
+      fi
+    fi
+  fi
+done
+
+exit 0

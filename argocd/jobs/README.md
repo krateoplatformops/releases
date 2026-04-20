@@ -1,34 +1,70 @@
 # Argo CD Job Templates
 
-This folder contains reusable Kubernetes Job assets intended for the GitOps repository that launches `krateoctl` from Argo CD.
+This folder contains plain Kubernetes manifests — one `Job` per install type. No Helm, no Kustomize. The releases repository stays pure YAML.
 
-## What is included
+## Structure
 
-- Three self-contained YAML manifests, one for each install type:
-  - `nodeport`
-  - `loadbalancer`
-  - `ingress`
+```
+argocd/jobs/
+├── ingress/
+│   └── job.yaml      # ServiceAccount + ClusterRoleBinding + Job (ingress)
+├── loadbalancer/
+│   └── job.yaml      # ServiceAccount + ClusterRoleBinding + Job (loadbalancer)
+└── nodeport/
+    └── job.yaml      # ServiceAccount + ClusterRoleBinding + Job (nodeport)
+```
 
-## How to use it
+Each manifest is self-contained and can be applied directly with `kubectl apply -f` if needed.
 
-Each manifest is a plain Kubernetes `Job`, so it can be applied without Kustomize.
-At runtime the Job uses the official `krateoctl` container image directly and runs `krateoctl install apply`.
-The Job expects a mounted Secret named `krateoctl-kubeconfig` with a `config` key available at `/root/kubeconfig/config`.
+## Prerequisites
 
-If you are using Argo CD, point the Application at one of:
+Before the Job runs, the target namespace must contain a Secret with the kubeconfig for the destination cluster:
 
-- `argocd/jobs/nodeport/job.yaml`
-- `argocd/jobs/loadbalancer/job.yaml`
-- `argocd/jobs/ingress/job.yaml`
+```bash
+kubectl create secret generic krateoctl-kubeconfig \
+  --from-file=config=$HOME/.kube/config \
+  -n krateo-system
+```
 
-The Job exits with a non-zero code if `krateoctl install apply` fails, so Kubernetes and Argo CD can surface the failure immediately.
-The release version is embedded in the Job command, so when the GitOps repo updates to a new release the Job template changes and the controller can recreate it cleanly.
+## ArgoCD Application (GitOps repository)
 
-If you want controller-level examples for the GitOps repository, see [`gitops-examples/`](../../gitops-examples/README.md).
+Deploy **one** install type per cluster. In your GitOps repository, create a single `Application` and set `path` to the install type you need.
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: krateo-install
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/krateoplatformops/releases
+    targetRevision: HEAD
+    path: argocd/jobs/ingress   # ← change to: ingress | loadbalancer | nodeport
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: krateo-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+```
+
+That's the only field you ever need to change.
+
+## How it works
+
+1. ArgoCD syncs the `Application` and reads the plain YAML from the chosen path.
+2. Kubernetes creates the `Job` in the target namespace.
+3. The `krateoctl` container runs `krateoctl install apply --type <installType> ...`.
+4. The Job exits with a non-zero code on failure, surfacing errors immediately in ArgoCD.
+5. After 300 seconds the completed Job is automatically garbage-collected.
 
 ## Notes
 
-- RBAC is intentionally not defined here. It belongs in the GitOps repository, as requested.
-- The release repository stays focused on versioned installation assets consumed by `krateoctl`.
-- If you need a different release version, update the version string in the Job command and keep the GitOps controller set to recreate immutable Jobs.
-- Make sure the GitOps repo creates the `krateoctl-kubeconfig` Secret in the target namespace before the Job runs.
+- `selfHeal: false` is intentional — Jobs are immutable once created. ArgoCD should not attempt to reconcile a running or completed Job.
+- To re-run the installation (e.g. after a version bump), delete the old Job manually or let `ttlSecondsAfterFinished` expire, then trigger a new sync.
+- The `krateoctl-kubeconfig` Secret must exist in the target namespace **before** the sync runs.

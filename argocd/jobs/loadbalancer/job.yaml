@@ -23,7 +23,7 @@ metadata:
   name: krateoctl-install-loadbalancer
   labels:
     app.kubernetes.io/name: krateoctl-install
-    app.kubernetes.io/version: argo-job-testing
+    app.kubernetes.io/version: RELEASE_VERSION
     krateo.io/install-type: loadbalancer
 spec:
   ttlSecondsAfterFinished: 300
@@ -37,7 +37,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: krateoctl-install
-        app.kubernetes.io/version: argo-job-testing
+        app.kubernetes.io/version: RELEASE_VERSION
         krateo.io/install-type: loadbalancer
     spec:
       serviceAccountName: krateoctl-install
@@ -53,7 +53,7 @@ spec:
             - install
             - apply
             - --version
-            - "argo-job-testing"
+            - "RELEASE_VERSION"
             - --repository
             - "https://github.com/krateoplatformops/releases"
             - --namespace
