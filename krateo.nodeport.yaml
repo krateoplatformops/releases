@@ -1,6 +1,7 @@
-# krateo.yaml - Krateo Platform Configuration
-# Declarative steps-based workflow for platform provisioning.
-# Steps execute sequentially in order, enabling natural dependency ordering.
+# Krateo release profile.
+# This file defines the NodePort deployment profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It configures the base Krateo platform for NodePort-based service exposure.
 
 # ============================================================================
 # Component Definitions

@@ -1,6 +1,7 @@
-# krateo-overrides.yaml - User customizations
-# Place this in your working directory and run: krateoctl plan/apply
-# This file overrides the base krateo.yaml configuration using component names.
+# Krateo release profile.
+# This file defines the debug override profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It enables debug environment variables for selected components and steps.
 
 # Optional: select a default profile defined below.
 # You can also override this from the CLI with:

@@ -1,0 +1,8 @@
+# Krateo release profile.
+# This file defines the no-finops override profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It disables the FinOps component and skips the FinOps database steps.
+
+components:
+  finops:
+    enabled: false

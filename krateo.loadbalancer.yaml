@@ -1,7 +1,7 @@
-# krateo-loadbalancer.yaml - Krateo Platform Configuration for LoadBalancer
-# Declarative steps-based workflow for platform provisioning with LoadBalancer service exposure.
-# Steps execute sequentially in order, enabling natural dependency ordering.
-# NOTE: Use this configuration for cloud platforms (GCP, AWS, Azure) where LoadBalancer IPs are available.
+# Krateo release profile.
+# This file defines the LoadBalancer deployment profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It configures the base Krateo platform for LoadBalancer-based service exposure.
 
 # ============================================================================
 # Component Definitions

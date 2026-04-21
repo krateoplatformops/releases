@@ -1,3 +1,7 @@
+# Krateo release profile.
+# This file defines the OpenShift override profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It switches FinOps and CNPG settings to OpenShift-compatible security defaults.
 components:
   finops:
     stepConfig:

@@ -1,4 +1,22 @@
+# Krateo release profile.
+# This file defines the monitoring override profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It enables OTEL collection settings for backend services that support monitoring.
 components:
+  core-provider:
+    stepConfig:
+      install-core-provider:
+        with:
+          values:
+            env:
+              OTEL_ENABLED: "true"
+              OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318"
+              OTEL_EXPORT_INTERVAL: "30s"
+            cdc:
+              env: 
+                OTEL_ENABLED: "true"
+                OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector-opentelemetry-collector.monitoring.svc.cluster.local:4318"
+                OTEL_EXPORT_INTERVAL: "30s"
   db-maintenance:
     stepConfig:
       install-deviser:
