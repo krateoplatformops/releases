@@ -11,7 +11,7 @@ fi
 
 echo "→ Running validate-krateo-versions workflow via act..."
 if ! act push \
-     -j validate-versions \
+  -j validate-profiles \
      -W .github/workflows/validate-krateo-versions.yml; then
   echo ""
   echo "✗ Push blocked: validation workflow failed."
