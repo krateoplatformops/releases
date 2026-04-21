@@ -20,31 +20,19 @@ if ! act push \
   exit 1
 fi
 
-# ── 2. Check all 3 jobs have the same version (on any push) ──────────────────
-v_ingress=$(awk '/- --version/{getline; print $2}' argocd/jobs/ingress/job.yaml | tr -d '"')
-v_loadb=$(awk '/- --version/{getline; print $2}' argocd/jobs/loadbalancer/job.yaml | tr -d '"')
-v_nodeport=$(awk '/- --version/{getline; print $2}' argocd/jobs/nodeport/job.yaml | tr -d '"')
-
-if [[ "$v_ingress" != "$v_loadb" || "$v_loadb" != "$v_nodeport" ]]; then
-  echo ""
-  echo "✗ Push blocked: --version mismatches between job manifests."
-  echo "  ingress:      $v_ingress"
-  echo "  loadbalancer: $v_loadb"
-  echo "  nodeport:     $v_nodeport"
-  echo ""
-  exit 1
-fi
-
-# ── 3. Check tag matches --version in job manifests ──────────────────────────
+# ── 2. Block tag push if tag doesn't match --version in job manifests ────────
 SEMVER_RE='^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)*$'
 
 while read local_ref local_sha remote_ref remote_sha; do
   if [[ "$local_ref" == refs/tags/* ]]; then
     tag="${local_ref#refs/tags/}"
     if [[ "$tag" =~ $SEMVER_RE ]]; then
-      if [[ "$tag" != "$v_ingress" ]]; then
+      # Extract version from one file (act validation already ensured they match)
+      job_version=$(awk '/- --version/{getline; print $2}' argocd/jobs/ingress/job.yaml | tr -d '"')
+      
+      if [[ "$tag" != "$job_version" ]]; then
         echo ""
-        echo "✗ Push blocked: tag '${tag}' does not match --version '${v_ingress}' in job manifests."
+        echo "✗ Push blocked: tag '${tag}' does not match --version '${job_version}' in job manifests."
         echo "  Run ./scripts/release.sh ${tag} to update the job manifests first."
         echo ""
         exit 1

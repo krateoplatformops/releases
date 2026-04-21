@@ -1,4 +1,4 @@
-name: Validate Krateo Versions Consistency
+name: Validate Krateo Profiles Consistency
 
 permissions:
   issues: write          
@@ -16,7 +16,7 @@ on:
       - 'krateo*.yaml'
 
 jobs:
-  validate-versions:
+  validate-profiles:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: pip install pyyaml
 
-      - name: Validate chart versions consistency
+      - name: Validate profile consistency
         id: validate
         run: python3 scripts/validate-config.py > validation_output.txt 2>&1
 
