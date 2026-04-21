@@ -1,6 +1,7 @@
-# krateo.yaml - Krateo Platform Configuration
-# Declarative steps-based workflow for platform provisioning.
-# Steps execute sequentially in order, enabling natural dependency ordering.
+# Krateo release profile.
+# This file defines the NodePort deployment profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It configures the base Krateo platform for NodePort-based service exposure.
 
 # ============================================================================
 # Component Definitions
@@ -373,6 +374,7 @@ steps:
           INIT: /call?resource=navmenus&apiVersion=widgets.templates.krateo.io/v1beta1&name=sidebar-nav-menu&namespace={{ .Namespace }}
           ROUTES_LOADER: /call?resource=routesloaders&apiVersion=widgets.templates.krateo.io/v1beta1&name=routes-loader&namespace={{ .Namespace }}
 
+
   # Portal starter
   - id: install-portal
     type: chart
@@ -399,7 +401,7 @@ steps:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc6
+            tag: 1.0.0-rc7
         chartInspector:
           image:
             repository: ghcr.io/krateoplatformops/chart-inspector

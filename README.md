@@ -26,6 +26,22 @@ Different Kubernetes environments have different networking and service exposure
 
 For more information, see the [krateoctl documentation](https://github.com/krateoplatformops/krateoctl/tree/main/docs) and the [krateoctl repository](https://github.com/krateoplatformops/krateoctl).
 
+## Argo CD Job Templates
+
+The `argocd/jobs/` folder contains plain Kubernetes manifests for the GitOps repository that launches `krateoctl` inside the cluster.
+
+Each manifest is a plain Kubernetes `Job` that uses the official `krateoctl` container image directly and then runs `krateoctl install apply`. The Job mounts a `krateoctl-kubeconfig` Secret, which must expose `/root/kubeconfig/config`. Updating the release version in GitOps changes the Job template and lets the controller recreate it instead of patching an immutable object.
+
+Supported install types:
+
+- `nodeport`
+- `loadbalancer`
+- `ingress`
+
+This keeps the release repository focused on versioned installation assets while leaving the Job recreation policy and RBAC wiring to GitOps.
+
+If you need controller manifests to paste into the GitOps repository, see [`gitops-examples/`](./gitops-examples/README.md).
+
 ## Use Cases
 
 - **Initial platform deployment** - Fresh installation to a new cluster

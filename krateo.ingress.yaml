@@ -1,7 +1,7 @@
-# krateo-ingress.yaml - Krateo Platform Configuration for Ingress
-# Declarative steps-based workflow for platform provisioning with Ingress-based service exposure.
-# Steps execute sequentially in order, enabling natural dependency ordering.
-# NOTE: Use this configuration for Kubernetes clusters with Ingress controllers (NGINX, GCP Ingress, etc.)
+# Krateo release profile.
+# This file defines the Ingress deployment profile for Krateo releases.
+# Use with krateoctl plan/apply.
+# It configures the base Krateo platform for Ingress-based service exposure.
 
 # ============================================================================
 # Component Definitions
@@ -401,7 +401,7 @@ steps:
           image:
             repository: ghcr.io/krateoplatformops/composition-dynamic-controller
             pullPolicy: IfNotPresent
-            tag: 1.0.0-rc6
+            tag: 1.0.0-rc7
         chartInspector:
           image:
             repository: ghcr.io/krateoplatformops/chart-inspector

@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: krateoctl-install-nodeport
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/krateoplatformops/releases.git
+    targetRevision: argo-job-testing
+    path: argocd/jobs/nodeport
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: krateo-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - Replace=true
