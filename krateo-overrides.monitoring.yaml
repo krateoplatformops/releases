@@ -3,7 +3,7 @@
 # Use with krateoctl plan/apply.
 # It enables OTEL collection settings for backend services that support monitoring.
 components:
-  core-provider:
+  composable-operations:
     stepConfig:
       install-core-provider:
         with:
