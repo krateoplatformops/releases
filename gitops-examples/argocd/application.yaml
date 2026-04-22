@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: krateoctl-install-nodeport
-  namespace: argocd
+  name: krateoctl-install-loadbalancer
+  namespace: krateo-system 
 spec:
   project: default
   source:
     repoURL: https://github.com/krateoplatformops/releases.git
-    targetRevision: argo-job-testing
-    path: argocd/jobs/nodeport
+    targetRevision: 3.0.0-rc2-dev13  # or a specific version
+    path: argocd/jobs/loadbalancer  # Choose: nodeport, loadbalancer, or ingress
   destination:
     server: https://kubernetes.default.svc
     namespace: krateo-system
@@ -19,4 +19,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ApplyOutOfSyncOnly=true
-      - Replace=true
+      - Replace=true  # Important: recreates Job on updates

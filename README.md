@@ -30,7 +30,7 @@ For more information, see the [krateoctl documentation](https://github.com/krate
 
 The `argocd/jobs/` folder contains plain Kubernetes manifests for the GitOps repository that launches `krateoctl` inside the cluster.
 
-Each manifest is a plain Kubernetes `Job` that uses the official `krateoctl` container image directly and then runs `krateoctl install apply`. The Job mounts a `krateoctl-kubeconfig` Secret, which must expose `/root/kubeconfig/config`. Updating the release version in GitOps changes the Job template and lets the controller recreate it instead of patching an immutable object.
+Each manifest is a plain Kubernetes `Job` that uses the official `krateoctl` container image directly and then runs `krateoctl install apply`. The Job uses the pod's ServiceAccount credentials, so no kubeconfig Secret is needed. Updating the release version in GitOps changes the Job template and lets the controller recreate it instead of patching an immutable object.
 
 Supported install types:
 

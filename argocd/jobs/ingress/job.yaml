@@ -44,9 +44,6 @@ spec:
         - name: krateoctl
           image: ghcr.io/krateoplatformops/krateoctl:latest
           imagePullPolicy: IfNotPresent
-          env:
-            - name: KUBECONFIG
-              value: kubeconfig/config
           args:
             - install
             - apply
@@ -58,14 +55,3 @@ spec:
             - "krateo-system"
             - --type
             - "ingress"
-          volumeMounts:
-            - name: kubeconfig
-              mountPath: /root/kubeconfig
-              readOnly: true
-      volumes:
-        - name: kubeconfig
-          secret:
-            secretName: krateoctl-kubeconfig
-            items:
-              - key: config
-                path: config

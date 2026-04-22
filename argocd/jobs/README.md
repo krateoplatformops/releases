@@ -18,13 +18,7 @@ Each manifest is self-contained and can be applied directly with `kubectl apply 
 
 ## Prerequisites
 
-Before the Job runs, the target namespace must contain a Secret with the kubeconfig for the destination cluster:
-
-```bash
-kubectl create secret generic krateoctl-kubeconfig \
-  --from-file=config=$HOME/.kube/config \
-  -n krateo-system
-```
+No kubeconfig Secret is required. The Job runs with the `krateoctl-install` ServiceAccount and uses in-cluster Kubernetes credentials.
 
 ## ArgoCD Application (GitOps repository)
 
@@ -59,7 +53,7 @@ That's the only field you ever need to change.
 
 1. ArgoCD syncs the `Application` and reads the plain YAML from the chosen path.
 2. Kubernetes creates the `Job` in the target namespace.
-3. The `krateoctl` container runs `krateoctl install apply --type <installType> ...`.
+3. The `krateoctl` container runs `krateoctl install apply --type <installType> ...` using the pod's ServiceAccount.
 4. The Job exits with a non-zero code on failure, surfacing errors immediately in ArgoCD.
 5. After 300 seconds the completed Job is automatically garbage-collected.
 
@@ -67,4 +61,4 @@ That's the only field you ever need to change.
 
 - `selfHeal: false` is intentional — Jobs are immutable once created. ArgoCD should not attempt to reconcile a running or completed Job.
 - To re-run the installation (e.g. after a version bump), delete the old Job manually or let `ttlSecondsAfterFinished` expire, then trigger a new sync.
-- The `krateoctl-kubeconfig` Secret must exist in the target namespace **before** the sync runs.
+- The Job depends on the `krateoctl-install` ServiceAccount and its ClusterRoleBinding in `krateo-system`.
