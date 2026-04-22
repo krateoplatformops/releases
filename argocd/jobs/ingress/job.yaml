@@ -42,7 +42,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: krateoctl
-          image: ghcr.io/krateoplatformops/krateoctl:latest
+          image: ghcr.io/krateoplatformops/krateoctl:1.2.1
           imagePullPolicy: IfNotPresent
           args:
             - install
