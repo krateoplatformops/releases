@@ -17,9 +17,9 @@ if [[ ! "$VERSION" =~ $SEMVER_RE ]]; then
 fi
 
 echo "→ Updating version to ${VERSION} in job manifests..."
-for f in argocd/jobs/ingress/job.yaml \
-         argocd/jobs/loadbalancer/job.yaml \
-         argocd/jobs/nodeport/job.yaml; do
+for f in gitops-examples/argocd/ingress/job.yaml \
+         gitops-examples/argocd/loadbalancer/job.yaml \
+         gitops-examples/argocd/nodeport/job.yaml; do
   # Update version labels
   sed -i.bak "s/app.kubernetes.io\/version:.*/app.kubernetes.io\/version: ${VERSION}/" "$f"
   # Update --version arg (the line immediately after "- --version")

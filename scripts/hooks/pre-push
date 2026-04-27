@@ -28,7 +28,7 @@ while read local_ref local_sha remote_ref remote_sha; do
     tag="${local_ref#refs/tags/}"
     if [[ "$tag" =~ $SEMVER_RE ]]; then
       # Extract version from one file (act validation already ensured they match)
-      job_version=$(awk '/- --version/{getline; print $2}' argocd/jobs/ingress/job.yaml | tr -d '"')
+      job_version=$(awk '/- --version/{getline; print $2}' gitops-examples/argocd/ingress/job.yaml | tr -d '"')
       
       if [[ "$tag" != "$job_version" ]]; then
         echo ""

@@ -1,0 +1,31 @@
+# Krateo release profile - Loabalancer with hostname
+# This file defines AWS-specific overrides for Krateo releases.
+# Use with krateoctl plan/apply.
+# AWS LoadBalancers expose hostname instead of IP, so this override adjusts the selectors.
+
+# Usage:
+#   krateoctl plan krateo.loadbalancer.yaml --overrides krateo-overrides.aws.yaml
+#   krateoctl apply krateo.loadbalancer.yaml --overrides krateo-overrides.aws.yaml
+
+components:
+  backend:
+    stepConfig:
+      # Extract authn LoadBalancer hostname for AWS (instead of IP)
+      extract-authn-lb-ip:
+        with:
+          valueFrom:
+            selector: .status.loadBalancer.ingress[0].hostname
+
+      # Extract snowplow LoadBalancer hostname for AWS (instead of IP)
+      extract-snowplow-lb-ip:
+        with:
+          valueFrom:
+            selector: .status.loadBalancer.ingress[0].hostname
+
+  events-stack:
+    stepConfig:
+      # Extract events-presenter LoadBalancer hostname for AWS (instead of IP)
+      extract-events-presenter-lb-ip:
+        with:
+          valueFrom:
+            selector: .status.loadBalancer.ingress[0].hostname

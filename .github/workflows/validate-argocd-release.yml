@@ -3,14 +3,14 @@ name: Validate ArgoCD Jobs & Release
 on:
   pull_request:
     paths:
-      - 'argocd/jobs/**'
+      - 'gitops-examples/argocd/**'
   push:
     branches:
       - main
     tags:
       - '[0-9]+.[0-9]+.[0-9]+*'
     paths:
-      - 'argocd/jobs/**'
+      - 'gitops-examples/argocd/**'
 
 jobs:
   validate-jobs:
@@ -20,9 +20,9 @@ jobs:
 
       - name: Validate Job Version Consistency
         run: |
-          v_ingress=$(awk '/- --version/{getline; print $2}' argocd/jobs/ingress/job.yaml | tr -d '"')
-          v_loadb=$(awk '/- --version/{getline; print $2}' argocd/jobs/loadbalancer/job.yaml | tr -d '"')
-          v_nodeport=$(awk '/- --version/{getline; print $2}' argocd/jobs/nodeport/job.yaml | tr -d '"')
+          v_ingress=$(awk '/- --version/{getline; print $2}' gitops-examples/argocd/ingress/job.yaml | tr -d '"')
+          v_loadb=$(awk '/- --version/{getline; print $2}' gitops-examples/argocd/loadbalancer/job.yaml | tr -d '"')
+          v_nodeport=$(awk '/- --version/{getline; print $2}' gitops-examples/argocd/nodeport/job.yaml | tr -d '"')
 
           if [[ "$v_ingress" != "$v_loadb" || "$v_loadb" != "$v_nodeport" ]]; then
             echo "❌ --version mismatches between job manifests."
@@ -38,7 +38,7 @@ jobs:
         run: |
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           # Consistency check already passed, so we can use ingress as reference
-          JOB_VERSION=$(awk '/- --version/{getline; print $2}' argocd/jobs/ingress/job.yaml | tr -d '"')
+          JOB_VERSION=$(awk '/- --version/{getline; print $2}' gitops-examples/argocd/ingress/job.yaml | tr -d '"')
           
           if [[ "$TAG_NAME" != "$JOB_VERSION" ]]; then
             echo "❌ Release Tag mismatch!"

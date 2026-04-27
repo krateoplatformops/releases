@@ -7,6 +7,8 @@ They are intentionally separate from the release assets and show how to wire the
 - Argo CD
 - Flux
 
+Argo CD examples live under [`argocd/`](./argocd/) and Flux examples live under their own example path.
+
 The examples are already filled in for the current repository and branch. Because the repo is public, no SSH key or repository secret is needed.
 
 Argo CD will recreate the Job on updates because the Application uses `Replace=true`.
