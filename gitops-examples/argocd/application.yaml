@@ -7,8 +7,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/krateoplatformops/releases.git
-    targetRevision: 3.0.0-rc2-dev13  # or a specific version
-    path: argocd/jobs/loadbalancer  # Choose: nodeport, loadbalancer, or ingress
+    targetRevision: 3.0.0-rc2-dev14  # or a specific version
+    path: gitops-examples/argocd/loadbalancer  # Choose: nodeport, loadbalancer, or ingress
   destination:
     server: https://kubernetes.default.svc
     namespace: krateo-system

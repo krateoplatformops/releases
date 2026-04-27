@@ -20,10 +20,10 @@ subjects:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: krateoctl-install-nodeport
+  name: krateoctl-install-ingress
   labels:
     app.kubernetes.io/name: krateoctl-install
-    krateo.io/install-type: nodeport
+    krateo.io/install-type: ingress
 spec:
   ttlSecondsAfterFinished: 300
   backoffLimit: 0
@@ -31,27 +31,27 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: krateoctl-install
-      krateo.io/install-type: nodeport
+      krateo.io/install-type: ingress
   template:
     metadata:
       labels:
         app.kubernetes.io/name: krateoctl-install
-        krateo.io/install-type: nodeport
+        krateo.io/install-type: ingress
     spec:
       serviceAccountName: krateoctl-install
       restartPolicy: Never
       containers:
         - name: krateoctl
-          image: ghcr.io/krateoplatformops/krateoctl:1.2.0
+          image: ghcr.io/krateoplatformops/krateoctl:1.2.1
           imagePullPolicy: IfNotPresent
           args:
             - install
             - apply
             - --version
-            - "3.0.0-rc2-dev13"
+            - "3.0.0-rc2-dev14"
             - --repository
             - "https://github.com/krateoplatformops/releases"
             - --namespace
             - "krateo-system"
             - --type
-            - "nodeport"
+            - "ingress"

@@ -28,9 +28,13 @@ For more information, see the [krateoctl documentation](https://github.com/krate
 
 ## Argo CD Job Templates
 
-The `argocd/jobs/` folder contains plain Kubernetes manifests for the GitOps repository that launches `krateoctl` inside the cluster.
+> [!IMPORTANT]
+> The Argo CD examples in [`gitops-examples/argocd/`](./gitops-examples/argocd/) show one way to use Argo CD to manage a Krateo installation inside the cluster.
 
 Each manifest is a plain Kubernetes `Job` that uses the official `krateoctl` container image directly and then runs `krateoctl install apply`. The Job uses the pod's ServiceAccount credentials, so no kubeconfig Secret is needed. Updating the release version in GitOps changes the Job template and lets the controller recreate it instead of patching an immutable object.
+
+> [!NOTE]
+> These manifests are sample-only examples. If you need to personalize the Jobs for a specific set of needs, such as installing with a specific override profile, edit them to match those needs and publish them in a separate repository or in a fork of this one.
 
 Supported install types:
 
