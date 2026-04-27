@@ -482,7 +482,7 @@ steps:
       releaseName: finops-database-handler
       repo: finops-database-handler
       url: https://charts.krateo.io
-      version: 0.5.3
+      version: 0.5.4
       wait: true
       timeout: 15m
       values:
@@ -542,7 +542,7 @@ steps:
       releaseName: finops-operator-scraper
       repo: finops-operator-scraper
       url: https://charts.krateo.io
-      version: 0.5.0
+      version: 0.5.1
       values:
         image:
           repository: ghcr.io/krateoplatformops/finops-operator-scraper
