@@ -48,7 +48,7 @@ spec:
             - install
             - apply
             - --version
-            - "3.0.0-rc2-dev16"
+            - "3.0.0"
             - --repository
             - "https://github.com/krateoplatformops/releases"
             - --namespace
