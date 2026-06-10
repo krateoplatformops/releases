@@ -44,6 +44,12 @@ componentsDefinition:
       - extract-events-presenter-lb-ip
       - extract-events-presenter-lb-port
 
+  logs-stack:
+    description: "Pod log ingestion and query stack"
+    steps:
+      - install-logs-ingester
+      - install-logs-presenter
+
   frontend:
     description: "Web UI and platform dashboard (LoadBalancer-exposed)"
     steps:
@@ -392,6 +398,62 @@ steps:
           namespace: {{ .Namespace }}
         selector: .spec.ports[0].port
 
+  # Logs ingester
+  - id: install-logs-ingester
+    type: chart
+    with:
+      releaseName: logs-ingester
+      repo: logs-ingester
+      url: https://charts.krateo.io
+      version: 0.2.0
+      values:
+        config:
+          DEBUG: "false"
+          PORT: "8083"
+
+          DB_HOST: pg-cluster-rw.{{ .Namespace }}.svc.cluster.local
+          DB_NAME: krateo-db
+          DB_READY_TIMEOUT: "5m"
+
+          # Namespace to observe (defaults to the release namespace).
+          # The chart's namespace-scoped Role/RoleBinding (pods get/list/watch,
+          # pods/log get) are created in this namespace.
+          NAMESPACE: "{{ .Namespace }}"
+          # Label selector of the pods whose logs are ingested. REQUIRED:
+          # without it the ingester does not start.
+          SELECTOR: "app.kubernetes.io/part-of=krateo"
+
+        secret:
+          name: krateo-db
+
+  # Logs presenter
+  - id: install-logs-presenter
+    type: chart
+    with:
+      releaseName: logs-presenter
+      repo: logs-presenter
+      url: https://charts.krateo.io
+      version: 0.1.0
+      wait: true
+      timeout: 15m
+      values:
+        service:
+          type: LoadBalancer
+        config:
+          DEBUG: "false"
+          PORT: "8083"
+
+          DB_HOST: pg-cluster-ro.{{ .Namespace }}.svc.cluster.local
+          DB_NAME: krateo-db
+          DB_READY_TIMEOUT: "5m"
+          AUTHN_NS: "{{ .Namespace }}"
+
+        dbSecret:
+          name: krateo-db
+
+        jwtSignKeySecret:
+          name: jwt-sign-key
+
   # Frontend UI
   - id: install-frontend
     type: chart
@@ -433,7 +495,7 @@ steps:
       releaseName: core-provider
       repo: core-provider
       url: https://charts.krateo.io
-      version: 1.0.0
+      version: 1.0.1-rc1
       values:
         image:
           repository: ghcr.io/krateoplatformops/core-provider
