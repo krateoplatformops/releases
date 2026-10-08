@@ -85,7 +85,7 @@ steps:
       releaseName: authn
       repo: authn
       url: https://charts.krateo.io
-      version: 0.22.2
+      version: 0.23.0
       wait: true
       timeout: 15m
       values:
