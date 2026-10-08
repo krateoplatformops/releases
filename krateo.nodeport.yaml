@@ -122,7 +122,7 @@ steps:
       repo: snowplow
       releaseName: snowplow
       url: https://charts.krateo.io
-      version: 0.20.6
+      version: 0.20.7
       wait: true
       timeout: 15m
       values:
@@ -275,7 +275,7 @@ steps:
       releaseName: resources-presenter
       repo: resources-presenter
       url: https://charts.krateo.io
-      version: 0.10.3
+      version: 0.10.4
       wait: true
       timeout: 15m
       values:
