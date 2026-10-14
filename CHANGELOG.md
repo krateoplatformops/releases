@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Previous changes not listed in this document can be traced using Git history.
 
+## [3.0.5] - Unreleased
+
+### Added
+
+- Added `displayingDependencies` to the `Form` widget to show or hide a field based on another field (`frontend` 1.0.30, re-tagged)
+
 ## [3.0.4] - 2026-10-14
 
 ### Fixed
