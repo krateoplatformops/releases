@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Previous changes not listed in this document can be traced using Git history.
 
+## [3.0.6] - Unreleased
+
+### Changed
+
+- Changed the pre-upgrade cleanup job to run as a non-root user (UID 1000), so cluster policies that forbid root containers no longer block it
+
 ## [3.0.5] - 2026-10-14
 
 ### Added
