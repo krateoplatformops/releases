@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Previous changes not listed in this document can be traced using Git history.
 
+## [3.0.7] - Unreleased
+
+### Added
+
+- Added `POST /can-i` to check many permissions for the current user in one call, e.g. one call instead of one per namespace in a blueprint form RESTAction (`resources-presenter` 0.10.5)
+
 ## [3.0.6] - 2026-10-16
 
 ### Changed

@@ -275,7 +275,7 @@ steps:
       releaseName: resources-presenter
       repo: resources-presenter
       url: https://charts.krateo.io
-      version: 0.10.4
+      version: 0.10.5
       wait: true
       timeout: 15m
       values:
