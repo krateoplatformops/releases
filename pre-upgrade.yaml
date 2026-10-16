@@ -45,6 +45,10 @@ spec:
         env:
         - name: NAMESPACE
           value: "{{ .Namespace }}"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
         command:
         - /bin/sh
         - -c
