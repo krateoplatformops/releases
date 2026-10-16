@@ -319,7 +319,7 @@ steps:
       releaseName: events-presenter
       repo: events-presenter
       url: https://charts.krateo.io
-      version: 0.7.4
+      version: 0.7.5
       wait: true
       timeout: 15m
       values:

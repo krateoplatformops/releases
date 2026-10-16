@@ -13,6 +13,10 @@ Previous changes not listed in this document can be traced using Git history.
 
 - Added `POST /can-i` to check many permissions for the current user in one call, e.g. one call instead of one per namespace in a blueprint form RESTAction (`resources-presenter` 0.10.5)
 
+### Fixed
+
+- Fixed real-time notifications stopping when `pool_max_conns` is set in `events-presenter`'s `DB_PARAMS`, so its database connections can now be capped (`events-presenter` 0.7.5)
+
 ## [3.0.6] - 2026-10-16
 
 ### Changed
