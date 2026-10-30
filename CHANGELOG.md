@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Previous changes not listed in this document can be traced using Git history.
 
+## [3.0.8] - 2026-10-30
+
+### Fixed
+
+- Fixed the Composition Status tab showing an `Error` row instead of an object whose chart template has no `metadata.namespace`; existing compositions are corrected on their next update (`composition-dynamic-controller` 1.0.1)
+- Fixed a composition's resource list not being written when it uses a resource type installed after its controller started (`composition-dynamic-controller` 1.0.1)
+
 ## [3.0.7] - 2026-10-16
 
 ### Added
